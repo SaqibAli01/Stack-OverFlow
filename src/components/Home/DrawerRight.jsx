@@ -196,7 +196,7 @@ const DrawerRight = () => {
           <svg
             aria-hidden="true"
             style={{ fill: "#379FEF" }}
-            class="fc-blue-400 d:fc-blue-700 svg-spot spotSearch"
+            className="fc-blue-400 d:fc-blue-700 svg-spot spotSearch"
             width="48"
             height="48"
             viewBox="0 0 48 48"

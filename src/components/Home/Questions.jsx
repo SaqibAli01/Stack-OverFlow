@@ -6,6 +6,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Ans from "./Ans";
 import Bountied from "./Bountied";
+import QueAns from "./Q_Ans";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -173,10 +174,10 @@ const Questions = () => {
             <Bountied />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            Item Three
+            <QueAns />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
-            Four
+            Four------
           </CustomTabPanel>
           <CustomTabPanel value={value} index={4}>
             five

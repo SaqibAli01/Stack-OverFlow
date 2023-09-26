@@ -8,17 +8,44 @@ import {
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
 
-//theme
+const btnStyles = {
+  textTransform: "none",
+  color: "#fff",
+  backgroundColor: "#0A95FF",
+  fontSize: { md: "13px", sm: "12px", xs: "11px" },
+  fontWeight: "400",
+  width: "70px",
+  minHeight: "35px",
+  padding: "10px 1px",
+  textAlign: "center",
+  py: 0.5,
+  px: 0.5,
+  "&:hover": {
+    color: "White",
+    backgroundColor: "orange",
+  },
+};
 
 const NavWeb = () => {
+  const navigate = useNavigate();
   const array = [
     { name: "About", link: "/" },
     { name: "Product", link: "/accounts" },
     { name: "Teams", link: "/invest" },
   ];
+
+  const signUpHandler = (e) => {
+    e.preventDefault();
+    navigate("/sign-up");
+  };
+
+  const logInHandler = (e) => {
+    e.preventDefault();
+    navigate("/sign-in");
+  };
 
   return (
     <>
@@ -74,10 +101,11 @@ const NavWeb = () => {
           <Box
             sx={{
               display: "flex",
+              // justifyContent: "space-between",
+              alignItems: "center",
               height: "40px",
               gap: "5px",
               width: "100%",
-              // border: "1px solid red",
             }}
           >
             {array.map((item, index) => {
@@ -86,15 +114,16 @@ const NavWeb = () => {
                   FontFamily: "Inter",
                   textDecoration: "none",
                   padding: "10px 14px",
-                  fontSize: isActive ? "24px" : "16px",
+                  fontSize: isActive ? "13px" : "15px",
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
                   borderRadius: "25px",
-                  color: isActive ? "#fff" : "#525960",
+                  color: isActive ? "#fff" : "#232629",
                   backgroundColor: isActive ? "#F48225" : "#fff",
                   justifyContent: "center",
                   height: "18px",
+                  fontWeight: 400,
                 };
               };
               return (
@@ -113,9 +142,7 @@ const NavWeb = () => {
                         fontFamily: "Inter",
                         fontStyle: "normal",
                         textAlign: "center",
-                        fontSize: "14px",
-                        fontWeight: 700,
-                        // height: "12px",
+                        fontSize: { md: "13px", sm: "12px", xs: "11px" },
                       }}
                     >
                       {item.name}
@@ -130,7 +157,8 @@ const NavWeb = () => {
                 display: "flex",
                 alignItems: "center",
                 borderRadius: "10px",
-                width: "90%",
+                width: "100%",
+                // border: "1px solid red",
               }}
             >
               <InputBase
@@ -140,8 +168,11 @@ const NavWeb = () => {
                   border: "1px solid #838C95",
                   width: "100%",
                   borderRadius: "10px",
+                  height: "30px",
+
                   px: 2,
                   py: 0.1,
+                  mr: 1,
                 }}
                 startAdornment={
                   <InputAdornment position="start">
@@ -150,6 +181,7 @@ const NavWeb = () => {
                         width: "100%",
                         color: "#838C95",
                         fontSize: "1.6rem",
+
                         ":hover": {
                           cursor: "pointer",
                         },
@@ -158,45 +190,34 @@ const NavWeb = () => {
                   </InputAdornment>
                 }
               />
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                gap: 1,
-
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Button
-                variant="contained"
+              <Box
                 sx={{
-                  color: "#39739D",
-                  backgroundColor: "#E1ECF4",
-                  width: "83px",
-                  height: "40px",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                  "&:hover": {
-                    color: "White",
-                  },
+                  display: "flex",
+                  gap: 1,
                 }}
               >
-                Log in
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  color: "#fff",
-                  backgroundColor: "#0A95FF",
-                  width: "93px",
-                  height: "40px",
-                  fontSize: "13px",
-                  fontWeight: "700",
-                }}
-              >
-                Sign Up
-              </Button>
+                <Button
+                  // variant="contained"
+                  size="small"
+                  sx={{
+                    ...btnStyles,
+                    color: "#2c5877",
+                    backgroundColor: "#E1ECF4",
+                  }}
+                  onClick={logInHandler}
+                >
+                  Log in
+                </Button>
+                <Button
+                  size="small"
+                  sx={{
+                    ...btnStyles,
+                  }}
+                  onClick={signUpHandler}
+                >
+                  Sign Up
+                </Button>
+              </Box>
             </Box>
           </Box>
         </Box>
