@@ -24,7 +24,6 @@ const Profile = () => {
           <Box
             sx={{
               p: 1,
-              border: "1px solid red",
             }}
           >
             <MyProfile />
