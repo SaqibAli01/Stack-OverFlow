@@ -20,6 +20,8 @@ import {
 } from "@mui/icons-material";
 import ProfileState from "./ProfileState";
 import Activity from "./Activity";
+import Saves from "./Saves";
+import Settings from "./Settings";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -66,7 +68,7 @@ const tabStyles = {
   backgroundColor: "transparent",
   minHeight: "35px",
   padding: "10px 1px",
-  minWidth: "80px",
+  minWidth: "75px",
   borderRadius: "20px",
 
   "&.Mui-selected": {
@@ -239,6 +241,8 @@ const MyProfile = () => {
           sx={{
             width: "100%",
             mt: 4,
+            px: 1,
+            // border: "1px solid red",
           }}
         >
           <Box>
@@ -272,10 +276,10 @@ const MyProfile = () => {
             <Activity />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            13
+            <Saves />
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
-            Four------
+            <Settings />
           </CustomTabPanel>
         </Box>
       </Box>

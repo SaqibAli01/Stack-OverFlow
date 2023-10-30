@@ -14,11 +14,12 @@ import Loading from "../Loader/Loading";
 
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { verification } from "../../ReduxToolKit/userSlice";
 import Timer from "./Timer";
 import { styled } from "@mui/material/styles";
 import { toast } from "react-toastify";
 import ReSendVerifyCode from "./ReSendVerifyCode";
+import { registerUserVerify } from "../../api/api";
+import useMakeToast from "../../hooks/makeToast";
 
 const VerificationCodeInput = styled(TextField)(({ theme }) => ({
   "& input": {
@@ -36,26 +37,26 @@ const VerificationCodeInput = styled(TextField)(({ theme }) => ({
   },
 }));
 
-const VerificationCode = ({ email }) => {
-  console.log("Props email", email);
+const VerificationCode = () => {
+  const { email } = useSelector((state) => state?.user?.userRegister);
+
+  // console.log("Props email", email);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const userEmail = useSelector((state) => state?.user?.user?.email);
-  console.log("🚀 userEmail", userEmail);
 
   const [reSendEmail, setRdSendEmail] = useState();
   // const location = useLocation();
 
   // const setSendEmail = location?.state?.reSendEmail;
-  console.log("🚀 ~ file reSendEmail:", reSendEmail);
+  // console.log("🚀 ~ file reSendEmail:", reSendEmail);
 
   useEffect(() => {
-    setRdSendEmail(userEmail);
-  }, [userEmail]);
+    setRdSendEmail(email);
+  }, []);
 
   // _______________Loading State________________
   const [loading, setLoading] = useState(false);
+  const makeToast = useMakeToast();
 
   const codeBoxes = Array.from({ length: 6 }, () => "");
 
@@ -105,34 +106,35 @@ const VerificationCode = ({ email }) => {
       return toast.error("Please Enter Write Verification Code");
     }
 
-    setLoading(true);
+    const data = {
+      email: reSendEmail,
+      verificationCode: output,
+    };
 
-    const response = await dispatch(verification(output));
-
-    setLoading(false);
-    if (response.payload) {
+    // console.log("Verification Code", data);
+    const response = await registerUserVerify(data, setLoading, dispatch);
+    console.log(
+      "🚀 ~ file: VerificationCode.jsx:117 ~ handleSubmit ~ response:",
+      response
+    );
+    if (response?.data?.success === true) {
       navigate("/sign-in");
+      makeToast(response?.data.message, "success", 3);
+    } else {
+      makeToast(response?.data.message, "warn", 3);
     }
-    setLoading(false);
-
-    // console.log("verificationCode", verificationCode.join(""));
+    // const response = await dispatch(verification(output));
   };
 
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOpen = () => {
     setIsOpen(true);
-    setRdSendEmail(userEmail);
   };
 
   const handleClose = () => {
     setIsOpen(false);
   };
-
-  // const VerifiedHandler = () => {
-  //   // toast.success("Verified");
-  //   toast.success("Verified");
-  // };
 
   return (
     <>

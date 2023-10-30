@@ -19,9 +19,16 @@ import { IconButton, InputAdornment } from "@mui/material";
 import Loading from "../Loader/Loading";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { signup } from "../../ReduxToolKit/userSlice";
+// import { signup } from "../../ReduxToolKit/userSlice";
 
 import { Google, GitHub, Facebook } from "@mui/icons-material";
+import { registerUser, signUp } from "../../api/api";
+import {
+  registerFailure,
+  registerStart,
+  registerSuccess,
+} from "../../ReduxToolKit/userSlice";
+import useMakeToast from "../../hooks/makeToast";
 
 const buttonStyles = {
   my: 1,
@@ -85,6 +92,7 @@ export default function SignUp() {
   } = useForm();
 
   const navigate = useNavigate();
+  const makeToast = useMakeToast();
   const dispatch = useDispatch();
   // _______________Loading State________________
 
@@ -111,25 +119,27 @@ export default function SignUp() {
   const onSubmit = async (data) => {
     // email,firstName,lastName,password, avatar
 
-    console.log(data, userImage);
+    // console.log(data, userImage);
 
     const formData = new FormData();
     formData.append("avatar", userImage);
     for (const key in data) {
       formData.append(key, data[key]);
     }
-    setLoading(true);
-
-    // dispatch(signup(formData));
-    const response = await dispatch(signup(formData));
-    setLoading(false);
-
-    const email = response?.payload?.email;
-    console.log("response.payload", email);
-
-    if (response.payload) {
-      // navigate("/verificationCode", { state: { email } });
-      navigate("/verificationCode");
+    //console.log
+    // for (var pair of formData.entries()) {
+    //   console.log(pair[0] + ", " + pair[1]);
+    // }
+    try {
+      const response = await registerUser(formData, setLoading, dispatch);
+      if (response?.data?.success === true) {
+        navigate("/verificationCode");
+        makeToast(response?.data.message, "success", 3);
+      } else {
+        makeToast(response?.data.error, "warn", 3);
+      }
+    } catch (err) {
+      console.log("error", err);
     }
   };
 
@@ -148,6 +158,10 @@ export default function SignUp() {
               alignItems: "center",
             }}
           >
+            <Typography component="h1" variant="h5">
+              Sign up
+            </Typography>
+
             <Avatar
               sx={{
                 m: 1,
@@ -165,7 +179,7 @@ export default function SignUp() {
                 // <LockOutlinedIcon />
                 <svg
                   aria-hidden="true"
-                  class="native svg-icon iconLogoGlyphMd"
+                  className="native svg-icon iconLogoGlyphMd"
                   width="32"
                   height="37"
                   viewBox="0 0 32 37"
@@ -178,9 +192,7 @@ export default function SignUp() {
                 </svg>
               )}
             </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign up
-            </Typography>
+
             <form onSubmit={handleSubmit(onSubmit)}>
               <Box>
                 <Button
@@ -347,9 +359,21 @@ export default function SignUp() {
 
               <Grid container justifyContent="flex-end">
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  {/* <Link href="#" variant="body2">
                     Already have an account? Sign in
-                  </Link>
+                  </Link> */}
+
+                  <Button
+                    sx={{
+                      textTransform: "none",
+                    }}
+                    variant="text"
+                    onClick={() => {
+                      navigate("/sign-in");
+                    }}
+                  >
+                    {"Already have an account? Sign in"}
+                  </Button>
                 </Grid>
               </Grid>
             </form>

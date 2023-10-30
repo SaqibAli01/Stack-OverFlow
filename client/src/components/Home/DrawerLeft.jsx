@@ -243,7 +243,7 @@ const DrawerLeft = () => {
           <svg
             style={{ fill: "orange" }}
             aria-hidden="true"
-            class="svg-icon iconBriefcaseSm"
+            className="svg-icon iconBriefcaseSm"
             width="18"
             height="18"
             viewBox="0 0 14 14"

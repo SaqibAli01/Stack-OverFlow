@@ -84,7 +84,7 @@ const QuestionTabs = () => {
     setValue(newValue);
   };
   return (
-    <div>
+    <>
       <Box
         sx={{
           display: "flex",
@@ -116,6 +116,7 @@ const QuestionTabs = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            flexWrap: "wrap",
           }}
         >
           <Tabs
@@ -136,11 +137,11 @@ const QuestionTabs = () => {
             />
             <Tab label="Activity" sx={{ ...tabStyles }} {...a11yProps(1)} />
             <Tab label="Newest" sx={{ ...tabStyles }} {...a11yProps(2)} />
-            <Tab
+            {/* <Tab
               label="Newest"
               sx={{ ...tabStyles, borderRadius: "0 10px 10px 0" }}
               {...a11yProps(3)}
-            />
+            /> */}
           </Tabs>
         </Box>
       </Box>
@@ -207,7 +208,7 @@ const QuestionTabs = () => {
           </Box>
         </CustomTabPanel>
       </Box>
-    </div>
+    </>
   );
 };
 

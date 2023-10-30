@@ -9,21 +9,25 @@ import {
   Paper,
 } from "@mui/material";
 import Loading from "../Loader/Loading";
-import { useDispatch } from "react-redux";
-import { resendVerificationCode } from "../../ReduxToolKit/userSlice";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { ResendEmailVerifyCode } from "../../api/api";
+import useMakeToast from "../../hooks/makeToast";
 
-const ReSendVerifyCode = ({ reSendEmail, handleClose }) => {
-  console.log("reSendEmail", reSendEmail);
+const ReSendVerifyCode = ({ handleClose }) => {
+  const { email } = useSelector((state) => state?.user?.userRegister);
+  const makeToast = useMakeToast();
+
+  // console.log("reSendEmail", email);
   const theme = useTheme();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+
   const [sendEmail, setSendEmail] = useState("");
 
   useEffect(() => {
-    setSendEmail(reSendEmail);
-  }, [reSendEmail]);
+    setSendEmail(email);
+  }, [email]);
 
   const handleResendVerifyCode = async () => {
     setLoading(true);
@@ -33,18 +37,19 @@ const ReSendVerifyCode = ({ reSendEmail, handleClose }) => {
       setLoading(false);
       return;
     }
-
-    const response = await dispatch(resendVerificationCode(sendEmail));
-    setLoading(false);
-
-    if (response.payload) {
-      handleStartTimer();
+    // console.log("sendEmail", sendEmail);
+    const data = {
+      email: sendEmail,
+    };
+    const response = await ResendEmailVerifyCode(data, setLoading);
+    if (response?.data?.success === true) {
       navigate("/verificationCode");
-    }
-
-    setTimeout(() => {
+      makeToast(response?.data.message, "success", 3);
       handleClose();
-    }, 60000);
+    } else {
+      makeToast(response?.data.message, "warn", 3);
+    }
+    setLoading(false);
   };
 
   // _______________Loading State________________
@@ -77,17 +82,6 @@ const ReSendVerifyCode = ({ reSendEmail, handleClose }) => {
     return `${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
       .padStart(2, "0")}`;
-  };
-
-  const handleStartTimer = () => {
-    if (!timerRunning && resendButtonEnabled) {
-      setTimerRunning(true);
-      setResendButtonEnabled(false);
-      setSeconds(60); // Reset the timer to 60 seconds
-      setTimeout(() => {
-        setResendButtonEnabled(true); // Enable the button after one minute
-      }, 60000); // 60,000 milliseconds = 1 minute
-    }
   };
 
   return (

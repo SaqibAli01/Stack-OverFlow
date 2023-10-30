@@ -100,7 +100,9 @@ const Questions = () => {
       >
         <Typography
           sx={{
-            fontSize: { md: "36px", sm: "30px", xs: "24px" },
+            fontSize: { md: "27px", sm: "22px", xs: "14px" },
+            fontWeight: 400,
+            color: "#232629",
           }}
         >
           Top Questions
@@ -110,6 +112,9 @@ const Questions = () => {
           sx={{
             color: "#fff",
             backgroundColor: "#0A95FF",
+            fontSize: { md: "27px", sm: "22px", xs: "14px" },
+            fontWeight: 400,
+            textTransform: "none",
           }}
         >
           Ask Question

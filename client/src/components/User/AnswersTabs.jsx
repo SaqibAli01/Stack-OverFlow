@@ -84,7 +84,7 @@ const AnswersTabs = () => {
     setValue(newValue);
   };
   return (
-    <div>
+    <Box>
       <Box
         sx={{
           display: "flex",
@@ -193,7 +193,7 @@ const AnswersTabs = () => {
           </Box>
         </CustomTabPanel>
       </Box>
-    </div>
+    </Box>
   );
 };
 
