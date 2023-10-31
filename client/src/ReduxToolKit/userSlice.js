@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   userRegister: {},
   user: {},
+  authUser: {},
+  askQuestion: {},
 };
 
 export const userSlice = createSlice({
@@ -15,10 +17,22 @@ export const userSlice = createSlice({
     signIn: (state, action) => {
       state.user = action.payload;
     },
+    auth: (state, action) => {
+      state.authUser = action.payload;
+    },
+    AskQuestions: (state, action) => {
+      state.askQuestion = action.payload;
+    },
+
+    logout: (state) => {
+      state.user = null;
+      state.userRegister = null;
+      state.authUser = null;
+    },
   },
 });
 
-export const { signUp, signIn } = userSlice.actions;
+export const { signUp, signIn, logout, auth, AskQuestions } = userSlice.actions;
 
 export default userSlice.reducer;
 

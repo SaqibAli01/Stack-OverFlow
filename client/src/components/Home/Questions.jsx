@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, Typography } from "@mui/material";
 import React from "react";
 
 import PropTypes from "prop-types";
@@ -7,6 +7,7 @@ import Tab from "@mui/material/Tab";
 import Ans from "./Ans";
 import Bountied from "./Bountied";
 import QueAns from "./Q_Ans";
+import { useNavigate } from "react-router-dom";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -84,11 +85,18 @@ const tabsLineNone = {
 };
 
 const Questions = () => {
+  const navigate = useNavigate();
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const handleQuestion = () => {
+    navigate("/AskQuestion");
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       <Box
@@ -109,6 +117,7 @@ const Questions = () => {
         </Typography>
         <Button
           variant="contained"
+          onClick={handleQuestion}
           sx={{
             color: "#fff",
             backgroundColor: "#0A95FF",

@@ -61,8 +61,8 @@ const defaultTheme = createTheme();
 
 export default function SignIn() {
   const [loading, setLoading] = React.useState(false);
-  const navigate = useNavigate();
   const makeToast = useMakeToast();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = async (event) => {
@@ -79,9 +79,17 @@ export default function SignIn() {
         password: myData.get("password"),
       };
       const response = await login(data, setLoading, dispatch);
+      // console.log(
+      //   "🚀 ~ file: SignIn.jsx:82 ~ handleSubmit ~ response:",
+      //   response
+      // );
       if (response?.data?.success === true) {
+        const token = response.data.token;
+        localStorage.setItem("token", token);
         navigate("/");
         makeToast(response?.data.message, "success", 3);
+      } else if (response?.data?.success === false) {
+        makeToast(response?.data.message, "warn", 3);
       } else {
         makeToast(response?.data.error, "warn", 3);
       }
@@ -229,7 +237,7 @@ export default function SignIn() {
                     }}
                     variant="text"
                     onClick={() => {
-                      navigate("/sign-up");
+                      navigate("/ForgotPassword");
                     }}
                   >
                     Forgot password?

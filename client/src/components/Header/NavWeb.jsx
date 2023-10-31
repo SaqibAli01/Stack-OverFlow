@@ -5,11 +5,20 @@ import {
   InputAdornment,
   InputBase,
   Typography,
+  styled,
 } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
 import { NavLink, useNavigate } from "react-router-dom";
 import logo from "../../assets/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../ReduxToolKit/userSlice";
+import { useState } from "react";
+import { useEffect } from "react";
+
+import Badge from "@mui/material/Badge";
+
+import Stack from "@mui/material/Stack";
 
 const btnStyles = {
   textTransform: "none",
@@ -29,8 +38,53 @@ const btnStyles = {
   },
 };
 
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  "& .MuiBadge-badge": {
+    backgroundColor: "#44b700",
+    color: "#44b700",
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    "&::after": {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      animation: "ripple 1.2s infinite ease-in-out",
+      border: "1px solid currentColor",
+      content: '""',
+    },
+  },
+  "@keyframes ripple": {
+    "0%": {
+      transform: "scale(.8)",
+      opacity: 1,
+    },
+    "100%": {
+      transform: "scale(2.4)",
+      opacity: 0,
+    },
+  },
+}));
+
+const SmallAvatar = styled(Avatar)(({ theme }) => ({
+  width: 22,
+  height: 22,
+  border: `2px solid ${theme.palette.background.paper}`,
+}));
+
 const NavWeb = () => {
   const navigate = useNavigate();
+
+  const authUser = useSelector((state) => state?.user?.authUser);
+  console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
+  const [avatar, setAvatar] = useState();
+  const [name, setName] = useState();
+  useEffect(() => {
+    setAvatar(`http://localhost:8000/${authUser?.user?.avatar}`);
+    setName(authUser?.user?.firstName);
+  }, []);
+
   const array = [
     { name: "About", link: "/" },
     { name: "Product", link: "/accounts" },
@@ -45,6 +99,15 @@ const NavWeb = () => {
   const logInHandler = (e) => {
     e.preventDefault();
     navigate("/sign-in");
+  };
+
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    // alert("logout");
+    dispatch(logout());
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
@@ -196,27 +259,54 @@ const NavWeb = () => {
                   gap: 1,
                 }}
               >
-                <Button
-                  // variant="contained"
-                  size="small"
-                  sx={{
-                    ...btnStyles,
-                    color: "#2c5877",
-                    backgroundColor: "#E1ECF4",
-                  }}
-                  onClick={logInHandler}
-                >
-                  Log in
-                </Button>
-                <Button
-                  size="small"
-                  sx={{
-                    ...btnStyles,
-                  }}
-                  onClick={signUpHandler}
-                >
-                  Sign Up
-                </Button>
+                {authUser ? (
+                  <>
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                      variant="dot"
+                    >
+                      <Avatar
+                        alt={`${authUser?.user?.firstName}`}
+                        src={`http://localhost:8000/${authUser?.user?.avatar}`}
+                      />
+                    </StyledBadge>
+                    {/* <Typography>{authUser?.user?.firstName}</Typography> */}
+                    <Button
+                      size="small"
+                      sx={{
+                        ...btnStyles,
+                      }}
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      // variant="contained"
+                      size="small"
+                      sx={{
+                        ...btnStyles,
+                        color: "#2c5877",
+                        backgroundColor: "#E1ECF4",
+                      }}
+                      onClick={logInHandler}
+                    >
+                      Log in
+                    </Button>
+                    <Button
+                      size="small"
+                      sx={{
+                        ...btnStyles,
+                      }}
+                      onClick={signUpHandler}
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </Box>
             </Box>
           </Box>
