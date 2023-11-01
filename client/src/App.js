@@ -17,6 +17,7 @@ import LogoutUser from "./components/logout/Logout";
 import { useDispatch } from "react-redux";
 import { auth } from "./ReduxToolKit/userSlice";
 import AskQuestion from "./components/AskQuestion/AskQuestion";
+import AskAnswer from "./components/AskAnswer/AskAnswer";
 
 function App() {
   const [data, setData] = useState({});
@@ -51,6 +52,7 @@ function App() {
 
         <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/AskQuestion" element={<AskQuestion />} />
+        <Route path="/AskAnswer/:id" element={<AskAnswer />} />
         <Route path="/reset-password/:token" element={<PasswordForm />} />
         <Route path="/email-msg" element={data ? <EmailMsg /> : <Homes />} />
         <Route path="/verificationCode" element={<VerificationCode />} />

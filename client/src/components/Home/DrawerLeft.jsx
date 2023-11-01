@@ -133,9 +133,8 @@ const DrawerLeft = () => {
           <Text isActive={activeItem === 5} onClick={() => handleItemClick(5)}>
             COLLECTIVES
           </Text>
-          <Text>
-            <InfoIcon sx={{ color: "#838C95" }} />
-          </Text>
+
+          <InfoIcon sx={{ color: "#838C95" }} />
         </Box>
 
         <Box
@@ -178,9 +177,8 @@ const DrawerLeft = () => {
           <Text isActive={activeItem === 7} onClick={() => handleItemClick(7)}>
             LABS
           </Text>
-          <Text>
-            <InfoIcon sx={{ color: "#838C95" }} />
-          </Text>
+
+          <InfoIcon sx={{ color: "#838C95" }} />
         </Box>
 
         <Box
@@ -224,9 +222,10 @@ const DrawerLeft = () => {
           <Text isActive={activeItem === 9} onClick={() => handleItemClick(9)}>
             TEAMS
           </Text>
-          <Text>
+          {/* <Text>
             <InfoIcon sx={{ color: "#838C95" }} />
-          </Text>
+          </Text> */}
+          <InfoIcon sx={{ color: "#838C95" }} />
         </Box>
 
         <Box

@@ -76,12 +76,13 @@ const SmallAvatar = styled(Avatar)(({ theme }) => ({
 const NavWeb = () => {
   const navigate = useNavigate();
 
-  const authUser = useSelector((state) => state?.user?.authUser);
-  console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
+  const authUser = useSelector((state) => state?.user);
+  console.log("🚀 ~ file: NavWeb.jsx:80  authUser:", authUser?.user?.user);
+  // console.log(`http://localhost:8000/${authUser?.user?.user?.avatar}`);
   const [avatar, setAvatar] = useState();
   const [name, setName] = useState();
   useEffect(() => {
-    setAvatar(`http://localhost:8000/${authUser?.user?.avatar}`);
+    setAvatar(`http://localhost:8000/${authUser?.user?.user?.avatar}`);
     setName(authUser?.user?.firstName);
   }, []);
 
@@ -259,7 +260,7 @@ const NavWeb = () => {
                   gap: 1,
                 }}
               >
-                {authUser ? (
+                {authUser?.user?.success === true ? (
                   <>
                     <StyledBadge
                       overlap="circular"
@@ -268,7 +269,7 @@ const NavWeb = () => {
                     >
                       <Avatar
                         alt={`${authUser?.user?.firstName}`}
-                        src={`http://localhost:8000/${authUser?.user?.avatar}`}
+                        src={`http://localhost:8000/${authUser?.user?.user?.avatar}`}
                       />
                     </StyledBadge>
                     {/* <Typography>{authUser?.user?.firstName}</Typography> */}

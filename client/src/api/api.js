@@ -2,7 +2,14 @@ import useMakeToast from "../hooks/makeToast";
 
 import axios from "axios";
 import Cookies from "js-cookie";
-import { AskQuestions, auth, signIn, signUp } from "../ReduxToolKit/userSlice";
+import {
+  AskAnswers,
+  AskQuestions,
+  auth,
+  getQuestions,
+  signIn,
+  signUp,
+} from "../ReduxToolKit/userSlice";
 import makeToast from "../hooks/showToast";
 
 const url = "http://localhost:8000/api/v1";
@@ -18,17 +25,17 @@ const url = "http://localhost:8000/api/v1";
 // } from "../redux/slices/userSlice";
 // export const URL = "railway.app";
 
-axios.interceptors.request.use(
-  (config) => {
-    config.timeout = 40000;
-    const AUTH_TOKEN = `${Cookies.get("access-token-ref")}` || "";
-    if (!config.headers["Authorization"]) {
-      config.headers["Authorization"] = `${AUTH_TOKEN}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// axios.interceptors.request.use(
+//   (config) => {
+//     config.timeout = 40000;
+//     const AUTH_TOKEN = `${Cookies.get("access-token-ref")}` || "";
+//     if (!config.headers["Authorization"]) {
+//       config.headers["Authorization"] = `${AUTH_TOKEN}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
 
 export const registerUser = async (userData, setLoading, dispatch) => {
   try {
@@ -73,16 +80,19 @@ export const ResendEmailVerifyCode = async (data, setLoading) => {
   }
 };
 
-export const login = async (data, setLoading, dispatch) => {
+export const login = async (data, setLoading, dispatch, makeToast) => {
   try {
     setLoading(true);
     const response = await axios.post(`${url}/user-login`, data);
     await dispatch(signIn(response?.data));
-    await dispatch(auth(response?.data));
-    // console.log("🚀  login ~ response:", response);
+    // await dispatch(auth(response?.data));
+    console.log("🚀  login ~ response:", response);
+    // if (response?.data?.success === true) {
+    //   makeToast("Question submitted successfully", "success");
+    // }
     return response;
   } catch (err) {
-    console.log(" ~ err:", err);
+    // console.log(" ~ err:", err);
     return err?.response;
   } finally {
     setLoading(false);
@@ -124,7 +134,7 @@ export const resetPassword = async (data, setLoading) => {
 };
 
 export const AsksQue = async (data, setLoading, dispatch) => {
-  console.log("🚀 ~ file: api.js:127 ~ AsksQue ~ data:", data);
+  // console.log("🚀 ~ file: api.js:127 ~ AsksQue ~ data:", data);
   try {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -145,6 +155,60 @@ export const AsksQue = async (data, setLoading, dispatch) => {
     await dispatch(AskQuestions(response?.data));
 
     makeToast("Question submitted successfully", "success");
+
+    return response;
+  } catch (error) {
+    console.log("error:", error?.response);
+
+    makeToast(`${error?.response?.data}`, "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const getQuestion = async (setLoading, dispatch) => {
+  try {
+    setLoading(true);
+
+    const response = await axios.get(`http://localhost:8000/get-question`);
+    // console.log("🚀 ~ file: api", response);
+    await dispatch(getQuestions(response?.data));
+    // makeToast("Question submitted successfully", "success");
+    return response;
+  } catch (error) {
+    console.log("error:", error?.response);
+
+    // makeToast(`${error?.response?.data}`, "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const AskAnswerApi = async (data, setLoading, dispatch) => {
+  // console.log("🚀 ~ file: api.js:127 ~ AsksQue ~ data:", data);
+  try {
+    const token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    setLoading(true);
+
+    const response = await axios.post(
+      `http://localhost:8000/ask-answer`,
+      data,
+      config
+    );
+
+    console.log("🚀 ~ file: api", response);
+    await dispatch(AskAnswers(response?.data));
+
+    makeToast("Answer submitted successfully", "success");
 
     return response;
   } catch (error) {

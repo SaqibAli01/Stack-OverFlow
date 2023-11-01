@@ -79,15 +79,13 @@ export default function SignIn() {
         password: myData.get("password"),
       };
       const response = await login(data, setLoading, dispatch);
-      // console.log(
-      //   "🚀 ~ file: SignIn.jsx:82 ~ handleSubmit ~ response:",
-      //   response
-      // );
+      console.log("🚀 submit", response);
       if (response?.data?.success === true) {
         const token = response.data.token;
         localStorage.setItem("token", token);
         navigate("/");
-        makeToast(response?.data.message, "success", 3);
+        makeToast("Login successfully", "success", 3);
+        // makeToast(response?.data.message, "success", 3);
       } else if (response?.data?.success === false) {
         makeToast(response?.data.message, "warn", 3);
       } else {

@@ -4,9 +4,10 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import useMakeToast from "../../hooks/makeToast";
-import { AsksQue } from "../../api/api";
+import { AsksQue, getQuestion } from "../../api/api";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../Loader/Loading";
+import { useNavigate } from "react-router-dom";
 var quill;
 const modules = {
   toolbar: {
@@ -37,13 +38,14 @@ function imageHandler() {
 }
 
 const AskQuestion = () => {
-  const authUser = useSelector((state) => state?.user?.authUser);
-  //   console.log("🚀 ~ file: AskQuestion.jsx:41 ~ authUser:", authUser);
-  //   console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
+  const authUser = useSelector((state) => state?.user?.user);
+  console.log("🚀 ~ file: AskQuestion.jsx:41 ~ authUser:", authUser);
+  console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
   const [avatar, setAvatar] = useState();
   const [name, setName] = useState();
   const [uId, setUID] = useState();
-  //   console.log("🚀 ~ name:", uId);
+  console.log("🚀 ~ name:", uId);
+  const navigate = useNavigate();
   useEffect(() => {
     setAvatar(`http://localhost:8000/${authUser?.user?.avatar}`);
     setName(authUser?.user?.firstName + " " + authUser?.user?.lastName);
@@ -67,26 +69,33 @@ const AskQuestion = () => {
       makeToast("Please write some data", "error", 3);
       return false;
     }
+    if (!uId) {
+      makeToast("User not login", "error", 3);
+      navigate("/sign-in");
+      return false;
+    }
+
     setAllow(false);
     const data = { text: value, id: uId };
     // console.log("🚀 ~ file: AskQuestion.jsx:55 ~ postBlogs ~ data:", data);
 
-    const response = await AsksQue(data, setLoading, dispatch);
-    console.log("response?.data", response?.data);
-
     // const response = await createPrivacyPolicy({ privacyPolicy: value });
-    // if (response?.data?.status === "success") {
-    //   makeToast("Privacy Policy add Successfully", "success", 4);
-    //   document.querySelector(".ql-editor").innerHTML = null;
-    //   setTimeout(() => {
-    //     document.querySelector(".ql-editor").innerHTML = null;
-    //     setValue(null);
-    //   }, 100);
-    //   setTitle("");
-    setAllow(true);
-    setValue(null);
+    const response = await AsksQue(data, setLoading, dispatch);
+    // console.log("response?.data", response?.data);
+    if (response?.data?.success === true) {
+      // makeToast("Question add Successfully", "success", 4);
+      await getQuestion(setLoading, dispatch);
+      document.querySelector(".ql-editor").innerHTML = null;
+      navigate("/");
+      // setTimeout(() => {
+      //   document.querySelector(".ql-editor").innerHTML = null;
+      //   setValue(null);
+      // }, 100);
+      setTitle("");
+      setAllow(true);
+      setValue(null);
+    }
   };
-
   return (
     <>
       <Loading isLoading={loading} />
