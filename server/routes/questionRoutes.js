@@ -3,6 +3,7 @@ import passport from "passport";
 import {
   askAnswer,
   askQuestion,
+  correctAnswer,
   getAnswer,
   getQuestions,
 } from "../controllers/QuestionController.js";
@@ -22,5 +23,12 @@ router.post(
 );
 
 router.get("/get-question", getQuestions);
+router.post("/get-answer", getAnswer);
+
+router.post(
+  "/verify-ans",
+  passport.authenticate("jwt", { session: false }),
+  correctAnswer
+);
 
 export default router;

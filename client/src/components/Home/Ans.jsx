@@ -196,16 +196,14 @@ const Ans = () => {
   const [allData, setAllData] = useState([]);
 
   const { data } = useSelector((state) => state?.user?.getQuestion);
-  // console.log("🚀 allData:", allData);
+  console.log("🚀 allData:", allData);
 
   useEffect(() => {
     const getQ = async () => {
       const response = await getQuestion(setLoading, dispatch);
-      // console.log("🚀 ~ file: Ans.jsx:206 ~ getQ ~ response:", response);
+      setAllData(response?.data?.data);
     };
     getQ();
-
-    setAllData(data);
   }, []);
 
   return (

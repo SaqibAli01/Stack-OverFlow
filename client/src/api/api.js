@@ -5,7 +5,9 @@ import Cookies from "js-cookie";
 import {
   AskAnswers,
   AskQuestions,
+  allComments,
   auth,
+  getAnswers,
   getQuestions,
   signIn,
   signUp,
@@ -138,7 +140,6 @@ export const AsksQue = async (data, setLoading, dispatch) => {
   try {
     setLoading(true);
     const token = localStorage.getItem("token");
-
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -153,7 +154,6 @@ export const AsksQue = async (data, setLoading, dispatch) => {
 
     console.log("🚀 ~ file: api", response);
     await dispatch(AskQuestions(response?.data));
-
     makeToast("Question submitted successfully", "success");
 
     return response;
@@ -215,6 +215,99 @@ export const AskAnswerApi = async (data, setLoading, dispatch) => {
     console.log("error:", error?.response);
 
     makeToast(`${error?.response?.data}`, "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const getAnswerApi = async (qId, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    const data = { questionId: qId };
+    // console.log("Api Data Question Id -----", data);
+    const response = await axios.post(`http://localhost:8000/get-answer`, data);
+    // console.log("🚀 ~ file: api >>>>>>>>", response?.data);
+    await dispatch(getAnswers(response?.data.data));
+    makeToast("Answers retrieved successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const commentsAdd = async (data, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.post(
+      `http://localhost:8000/add-comment`,
+      data,
+      config
+    );
+    console.log("🚀 ~add comments >>>>>>>>", response?.data);
+
+    makeToast("Add Comment retrieved successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const getComments = async (setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    // console.log("Api Data Question Id -----", data);
+    const response = await axios.get(`http://localhost:8000/get-comment`);
+    // console.log("🚀 Get Comment Api", response?.data);
+
+    await dispatch(allComments(response?.data.data));
+    makeToast("Get Comment successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+export const verifyAnswer = async (id, setLoading) => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.post(
+      `http://localhost:8000/verify-ans`,
+      id,
+      config
+    );
+    makeToast(" Verify  successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
     return error.response;
   } finally {
     setLoading(false);

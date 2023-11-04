@@ -16,7 +16,6 @@ export const registerUser = async (req, res, next) => {
     const { firstName, lastName, password, email, avatar } = req.body;
     // console.log("req.body:", req.body);
 
-    // Check if the user with the same email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res
@@ -24,7 +23,6 @@ export const registerUser = async (req, res, next) => {
         .json({ success: false, error: "User already exists" });
     }
 
-    // Ensure an uploaded image is available
     if (!req.file) {
       return res.status(400).json({ message: "Please upload your image" });
     }
@@ -42,7 +40,7 @@ export const registerUser = async (req, res, next) => {
       lastName,
       email,
       password: encPassword,
-      avatar: req.file.path, // Using req.file.path directly
+      avatar: req.file.path,
       verified: false,
       verificationCode,
       verificationCodeExpiresAt,
@@ -383,25 +381,30 @@ export const updateUserName = async (req, res) => {
 // ___________________________Update Profile________________________
 export const updateProfile = async (req, res) => {
   try {
-    // Find the user by ID
+    console.log("req.body", req.body);
+
     const userId = req.user.id;
-    // console.log(" updateProfile ~ userId:", userId);
 
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    // Update the user's avatar if provided
-    if (req.file) {
-      user.avatar = req.file.path;
+
+    console.log("req.file", req.file);
+    // console.log("req.file.path", req.file.path);
+    if (!req.file) {
+      return res.status(400).json({ message: "Please upload your image" });
     }
-    // console.log(" updateProfile ~ req.file:", req.file);
+
+    user.avatar = req.file.path;
 
     // Save the updated user to the database
     await user.save();
 
-    res.status(200).json({ message: "Profile updated successfully" });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", avatar: user?.avatar });
   } catch (error) {
     console.error("Error in updateProfile:", error);
     res.status(500).json({ message: "Internal server error" });

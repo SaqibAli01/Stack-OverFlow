@@ -18,14 +18,28 @@ import { useDispatch } from "react-redux";
 import { auth } from "./ReduxToolKit/userSlice";
 import AskQuestion from "./components/AskQuestion/AskQuestion";
 import AskAnswer from "./components/AskAnswer/AskAnswer";
+import { getComments, getQuestion } from "./api/api";
 
 function App() {
   const [data, setData] = useState({});
-  // console.log("🚀  App ~ data:", data);
+
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const getQ = async () => {
+    const response = await getQuestion(setLoading, dispatch);
+    // console.log("🚀 ~ file:-----------------:", response);
+  };
+
+  const getComm = async () => {
+    const response = await getComments(setLoading, dispatch);
+    // console.log("🚀 ~ All Comments:-----------------:", response);
+  };
 
   useEffect(() => {
+    getQ();
+    getComm();
     axios
       .get("http://localhost:8000/protected-route", {
         headers: {

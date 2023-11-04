@@ -221,7 +221,6 @@ const Bountied = () => {
                     <Typography sx={{ color: "#0074CC", fontWeight: 500 }}>
                       {questions}
                     </Typography>
-
                     <Box
                       sx={{
                         display: "flex",

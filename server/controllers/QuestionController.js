@@ -42,7 +42,7 @@ const getQuestions = async (req, res) => {
   try {
     const questions = await Question.find().populate({
       path: "user",
-      select: "firstName lastName avatar",
+      select: "_id firstName lastName avatar",
     });
 
     res.status(200).json({
@@ -60,10 +60,10 @@ const getQuestions = async (req, res) => {
 
 const askAnswer = async (req, res) => {
   try {
-    const { text, userId, questionId } = req.body;
-    console.log("text:", text);
-    console.log("userId:", userId);
-    console.log("questionId:", questionId);
+    const { text, userId, questionId, QuestionAuthor } = req.body;
+    // console.log("text:", text);
+    // console.log("userId:", userId);
+    // console.log("questionId:", questionId);
 
     const findUser = await User.findOne({ _id: userId });
     const findQuestion = await Question.findOne({ _id: questionId });
@@ -84,8 +84,9 @@ const askAnswer = async (req, res) => {
 
     const answer = new Answers({
       text,
-      userId: findUser?._id,
+      user: findUser?._id,
       questionId: findQuestion?._id,
+      QuestionAuthor: findQuestion?.user?._id,
     });
     console.log("answer", answer);
     await answer.save();
@@ -103,12 +104,44 @@ const askAnswer = async (req, res) => {
     });
   }
 };
-
-const getAnswer = async (req, res) => {
+const correctAnswer = async (req, res) => {
   try {
-    const answers = await Answers.find().populate({
+    const id = req.body;
+
+    const findAuth = await Answers.findOne({ QuestionAuthor: id });
+
+    if (!findAuth) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Answer Not found ......... " });
+    }
+
+    // await User.findByIdAndUpdate(user._id, { verified: true });
+    await Answers.findByIdAndUpdate({ verified: true });
+
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Answers Verify successfully",
+        data: findAuth,
+      });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getAnswer = async (req, res, next) => {
+  try {
+    const { questionId } = req.body;
+    // console.log("req.body", req.body);
+    // console.log("questionId", questionId);
+
+    const answers = await Answers.find({ questionId }).populate({
       path: "user",
-      select: "firstName lastName avatar",
+      select: "_id firstName lastName avatar",
+      options: { strictPopulate: false },
     });
 
     res.status(200).json({
@@ -124,4 +157,4 @@ const getAnswer = async (req, res) => {
   }
 };
 
-export { askQuestion, getQuestions, askAnswer, getAnswer };
+export { askQuestion, getQuestions, askAnswer, getAnswer, correctAnswer };

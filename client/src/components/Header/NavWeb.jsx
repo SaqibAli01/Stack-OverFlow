@@ -77,7 +77,7 @@ const NavWeb = () => {
   const navigate = useNavigate();
 
   const authUser = useSelector((state) => state?.user);
-  console.log("🚀 ~ file: NavWeb.jsx:80  authUser:", authUser?.user?.user);
+  // console.log("🚀 ~ file: NavWeb.jsx:80  authUser:", authUser?.user?.user);
   // console.log(`http://localhost:8000/${authUser?.user?.user?.avatar}`);
   const [avatar, setAvatar] = useState();
   const [name, setName] = useState();

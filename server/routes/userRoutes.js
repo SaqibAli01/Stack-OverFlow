@@ -44,6 +44,7 @@ router.put(
 
 router.put(
   "/updateProfile",
+  upload.single("avatar"),
   passport.authenticate("jwt", { session: false }),
   updateProfile
 );

@@ -39,12 +39,12 @@ function imageHandler() {
 
 const AskQuestion = () => {
   const authUser = useSelector((state) => state?.user?.user);
-  console.log("🚀 ~ file: AskQuestion.jsx:41 ~ authUser:", authUser);
-  console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
+  // console.log("🚀 ~ file: AskQuestion.jsx:41 ~ authUser:", authUser);
+  // console.log(`http://localhost:8000/${authUser?.user?.avatar}`);
   const [avatar, setAvatar] = useState();
   const [name, setName] = useState();
   const [uId, setUID] = useState();
-  console.log("🚀 ~ name:", uId);
+  // console.log("🚀 ~ name:", uId);
   const navigate = useNavigate();
   useEffect(() => {
     setAvatar(`http://localhost:8000/${authUser?.user?.avatar}`);

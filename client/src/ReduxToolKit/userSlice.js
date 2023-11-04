@@ -7,6 +7,8 @@ const initialState = {
   askQuestion: {},
   getQuestion: [],
   askAns: {},
+  getAns: [],
+  userComment: [],
 };
 
 export const userSlice = createSlice({
@@ -33,9 +35,17 @@ export const userSlice = createSlice({
     getQuestions: (state, action) => {
       state.getQuestion = action.payload;
     },
+
+    getAnswers: (state, action) => {
+      state.getAns = action.payload;
+    },
     // getQuestions: (state, action) => {
     //   state.getQuestion = [...state.getQuestion, ...action.payload];
     // },
+
+    allComments: (state, action) => {
+      return { ...state, userComment: action.payload };
+    },
 
     logout: (state) => {
       state.user = null;
@@ -53,6 +63,8 @@ export const {
   AskQuestions,
   getQuestions,
   AskAnswers,
+  getAnswers,
+  allComments,
 } = userSlice.actions;
 
 export default userSlice.reducer;

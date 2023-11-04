@@ -7,7 +7,7 @@ const answerSchema = new Schema({
     type: String,
     required: true,
   },
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     // required: true,
@@ -17,9 +17,18 @@ const answerSchema = new Schema({
     ref: "Question",
     // required: true,
   },
+  QuestionAuthor: {
+    type: String,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+
+  verifiedAnswers: {
+    type: Boolean,
+    default: false,
   },
 });
 
