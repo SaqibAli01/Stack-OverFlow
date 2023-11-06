@@ -5,11 +5,11 @@ import User from "../models/userModel.js";
 const askQuestion = async (req, res) => {
   try {
     const { text, id } = req.body;
-    console.log("req.body id:", id);
-    console.log("user", id);
+    // console.log("req.body id:", id);
+    // console.log("user", id);
     const findUser = await User.findOne({ _id: id });
 
-    console.log("-- users --:", findUser);
+    // console.log("-- users --:", findUser);
 
     if (!findUser) {
       return res
@@ -58,43 +58,108 @@ const getQuestions = async (req, res) => {
   }
 };
 
+// const askAnswer = async (req, res) => {
+//   try {
+//     const { text, userId, questionId, QuestionAuthor } = req.body;
+
+//     const findUser = await User.findOne({ _id: userId });
+//     const findQuestion = await Question.findOne({ _id: questionId });
+
+//     // console.log("-- questionId --:", findQuestion);
+
+//     if (!findUser) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "User not Login " });
+//     }
+
+//     if (!findQuestion) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Question Not find " });
+//     }
+
+//     const answer = new Answers({
+//       text,
+//       user: findUser?._id,
+//       questionId: findQuestion?._id,
+//       QuestionAuthor: findQuestion?.user?._id,
+//     });
+//     // console.log("answer", answer);
+//     await answer.save();
+
+//     res.status(201).json({
+//       success: true,
+//       message: "Answer asked successfully!",
+//       answer,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({
+//       success: false,
+//       error: error.message,
+//     });
+//   }
+// };
+
 const askAnswer = async (req, res) => {
   try {
     const { text, userId, questionId, QuestionAuthor } = req.body;
-    // console.log("text:", text);
-    // console.log("userId:", userId);
-    // console.log("questionId:", questionId);
 
     const findUser = await User.findOne({ _id: userId });
     const findQuestion = await Question.findOne({ _id: questionId });
 
-    console.log("-- questionId --:", findQuestion);
-
     if (!findUser) {
       return res
         .status(404)
-        .json({ success: false, message: "User not Login " });
+        .json({ success: false, message: "User not found" });
     }
 
     if (!findQuestion) {
       return res
         .status(404)
-        .json({ success: false, message: "Question Not find " });
+        .json({ success: false, message: "Question not found" });
     }
+
+    const answerCount = await Answers.countDocuments({
+      questionId: findQuestion?._id,
+    });
+
+    // Increment the view count for the new answer
+    const view = (findQuestion.viewCount += 1);
+
+    findQuestion.viewCount += 1;
+    await findQuestion.save();
+
+    console.log("🚀 view:", view);
 
     const answer = new Answers({
       text,
       user: findUser?._id,
+      answerCount: answerCount,
       questionId: findQuestion?._id,
       QuestionAuthor: findQuestion?.user?._id,
     });
-    console.log("answer", answer);
+
     await answer.save();
+
+    await Question.findByIdAndUpdate(findQuestion._id, {
+      answerCount: answerCount,
+    });
+
+    // res.status(201).json({
+    //   success: true,
+    //   message: "Answer asked successfully!",
+    //   answer,
+    //   answerCount,
+    //   viewCount: findQuestion.viewCount,
+    // });
 
     res.status(201).json({
       success: true,
       message: "Answer asked successfully!",
       answer,
+      answerCount,
     });
   } catch (error) {
     console.error(error);
@@ -104,11 +169,14 @@ const askAnswer = async (req, res) => {
     });
   }
 };
+
 const correctAnswer = async (req, res) => {
   try {
-    const id = req.body;
+    const _id = req.body;
+    console.log("🚀 ~ correctAnswer ~ id:", _id);
 
-    const findAuth = await Answers.findOne({ QuestionAuthor: id });
+    const findAuth = await Answers.findOne({ QuestionAuthor: _id });
+    console.log(" ~ findAuth:", findAuth);
 
     if (!findAuth) {
       return res
@@ -116,16 +184,14 @@ const correctAnswer = async (req, res) => {
         .json({ success: false, message: "Answer Not found ......... " });
     }
 
-    // await User.findByIdAndUpdate(user._id, { verified: true });
-    await Answers.findByIdAndUpdate({ verified: true });
+    await Answers.findByIdAndUpdate(findAuth._id, { verifiedAnswers: true });
+    // await Answers.findByIdAndUpdate({ verified: true });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Answers Verify successfully",
-        data: findAuth,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Answers Verify successfully",
+      data: findAuth,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: error.message });
@@ -135,9 +201,9 @@ const correctAnswer = async (req, res) => {
 const getAnswer = async (req, res, next) => {
   try {
     const { questionId } = req.body;
-    // console.log("req.body", req.body);
-    // console.log("questionId", questionId);
-
+    const findQuestion = await Question.findOne({ _id: questionId });
+    findQuestion.viewCount += 1;
+    await findQuestion.save();
     const answers = await Answers.find({ questionId }).populate({
       path: "user",
       select: "_id firstName lastName avatar",

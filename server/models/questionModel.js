@@ -12,6 +12,14 @@ const questionSchema = new Schema({
     ref: "User",
     // required: true,
   },
+  answerCount: {
+    type: Number,
+    default: 0,
+  },
+  viewCount: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

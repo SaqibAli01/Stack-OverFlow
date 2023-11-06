@@ -196,7 +196,7 @@ const Ans = () => {
   const [allData, setAllData] = useState([]);
 
   const { data } = useSelector((state) => state?.user?.getQuestion);
-  console.log("🚀 allData:", allData);
+  // console.log("🚀 allData:", allData);
 
   useEffect(() => {
     const getQ = async () => {
@@ -228,8 +228,18 @@ const Ans = () => {
                       }}
                     >
                       <Text>{0} votes</Text>
-                      <Text>{2} answers</Text>
-                      <Text>{1} views</Text>
+                      {item?.answerCount === 0 ? (
+                        <Text>{item?.answerCount} answers</Text>
+                      ) : (
+                        <Text>{item?.answerCount + 1} answers</Text>
+                      )}
+
+                      {/* {item?.viewCount === 0 ? (
+                        <Text>{item?.viewCount} views</Text>
+                      ) : (
+                        <Text>{item?.viewCount + 1} views</Text>
+                      )} */}
+                      <Text>{item?.viewCount} views</Text>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={12} md={9.5}>

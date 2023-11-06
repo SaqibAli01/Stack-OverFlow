@@ -17,6 +17,10 @@ const createComment = async (req, res) => {
         .json({ success: false, message: "Missing required fields" });
     }
 
+    const findAnswers = await Answers.findOne({ _id: findAnswer._id });
+    findAnswers.viewCountAnswer += 1;
+    await findAnswers.save();
+
     const comment = new Comment({
       text: text,
       userId: findUser._id,

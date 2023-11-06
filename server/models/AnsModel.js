@@ -21,6 +21,14 @@ const answerSchema = new Schema({
     type: String,
     required: true,
   },
+  answerCount: {
+    type: Number,
+    default: 1,
+  },
+  viewCountAnswer: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

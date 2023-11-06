@@ -240,13 +240,29 @@ const AskAnswer = () => {
   //------------Corrrect answer --------------------
 
   const correctAnswer = async (id) => {
-    alert(id);
-    const response = await verifyAnswer({ id: id }, setLoading);
-    console.log(
-      "🚀 ~ file: AskAnswer.jsx:245 ~ correctAnswer ~ response:",
-      response
-    );
+    // alert(id);
+    const data = {
+      _id: id,
+    };
+    const response = await verifyAnswer(data, setLoading);
+    console.log("🚀 ~  correctAnswer ~ response:", response);
   };
+
+  //------------ Answer up arrow --------------------
+  const handleAnswerUp = (id) => {
+    alert(id);
+  };
+
+  const [sortOrder, setSortOrder] = useState("desc"); // 'desc' for descending, 'asc' for ascending
+
+  // Toggle sort order when the button is clicked
+  const handleSortClick = () => {
+    setSortOrder(sortOrder === "desc" ? "asc" : "desc");
+  };
+  // const handleSortClick = () => {
+  //   setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  // };
+
   return (
     <>
       <Loading isLoading={loading} />
@@ -267,8 +283,17 @@ const AskAnswer = () => {
                     >
                       <Text>{0} votes</Text>
                       <Box></Box>
-                      <Text>{2} answers</Text>
-                      <Text>{1} views</Text>
+                      {item?.answerCount === 0 ? (
+                        <Text>{item?.answerCount} answers</Text>
+                      ) : (
+                        <Text>{item?.answerCount + 1} answers</Text>
+                      )}
+                      {/* {item?.viewCount === 0 ? (
+                        <Text>{item?.viewCount} views</Text>
+                      ) : (
+                        <Text>{item?.viewCount + 1} views</Text>
+                      )} */}
+                      <Text>{item?.viewCount} views</Text>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={12} md={9.5}>
@@ -395,100 +420,29 @@ const AskAnswer = () => {
           }}
         >
           <Box sx={{ width: "100%" }}>
-            {getAns?.map((item, i) => {
-              // console.log("🚀  ~ item:", item);
-              return (
-                <Box
-                  key={i}
-                  sx={{
-                    width: "100%",
-                    // border: "1px solid red",
-                    display: "flex",
-                    borderBottom: "2px solid #BABFC4",
-                    // flexDirection: "column",
-                    mb: 2,
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      // justifyContent: "center",
-                      alignItems: "center",
-                      flexDirection: "column",
-                      pr: 2,
-                      // border: "1px solid black ",
-                    }}
-                  >
-                    <ArrowDropUpIcon
-                      sx={{
-                        border: "1px solid #BABFC4",
-                        cursor: "pointer",
-                        fontSize: "36px",
-                        p: 0.1,
-                        borderRadius: "50%",
-                        "&:hover": {
-                          backgroundColor: "#FAECC6",
-                        },
-                      }}
-                    />
-
-                    <Typography
-                      sx={{
-                        fontSize: "20px",
-                        fontWeight: "bold",
-                        py: 1,
-                      }}
-                    >
-                      3
-                    </Typography>
-                    <ArrowDropDownIcon
-                      sx={{
-                        border: "1px solid #BABFC4",
-                        cursor: "pointer",
-                        fontSize: "36px",
-                        p: 0.1,
-                        borderRadius: "50%",
-                        "&:hover": {
-                          backgroundColor: "#FAECC6",
-                        },
-                      }}
-                    />
-
-                    <CheckIcon
-                      sx={{
-                        fontSize: "40px",
-                        color: "#18864b",
-                        mt: 1,
-                        fontWeight: 400,
-                      }}
-                    />
-                  </Box>
-
-                  <Box
-                    sx={{
-                      width: "100%",
-                      // border: "1px solid red",
-                    }}
-                  >
+            {
+              // getAns?
+              getAns
+                ?.slice()
+                .sort((a, b) => {
+                  if (sortOrder === "asc") {
+                    return a.viewCountAnswer - b.viewCountAnswer;
+                  } else {
+                    return b.viewCountAnswer - a.viewCountAnswer;
+                  }
+                })
+                .map((item, i) => {
+                  console.log("🚀  ~ item:", item);
+                  return (
                     <Box
+                      key={i}
                       sx={{
+                        width: "100%",
+                        // border: "1px solid red",
                         display: "flex",
-                        // justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography sx={{ fontWeight: 500 }}>
-                        Answer {i + 1}
-                      </Typography>
-                      <div
-                        style={{ padding: "5px " }}
-                        dangerouslySetInnerHTML={{ __html: item?.text }}
-                      />
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
+                        borderBottom: "2px solid #BABFC4",
+                        // flexDirection: "column",
+                        mb: 2,
                       }}
                     >
                       <Box
@@ -496,163 +450,265 @@ const AskAnswer = () => {
                           display: "flex",
                           // justifyContent: "center",
                           alignItems: "center",
-                          gap: 2,
+                          flexDirection: "column",
+                          pr: 2,
+                          // border: "1px solid black ",
                         }}
                       >
-                        <Avatar
-                          src={`http://localhost:8000/${item?.user?.avatar}`}
-                          alt="img"
-                        />
-                        <Typography fontWeight={700} color={"#0A95FF"}>
-                          {item?.user?.firstName} {item?.user?.lastName}
-                        </Typography>
-                      </Box>
+                        {item?.viewCount}
 
-                      {/* {authUser?.user?._id && item?.user?._id && ( */}
-
-                      {authUser?.user?._id === item?.QuestionAuthor && (
-                        <Box
+                        <ArrowDropUpIcon
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
+                            border: "1px solid #BABFC4",
+                            cursor: "pointer",
+                            fontSize: "36px",
+                            p: 0.1,
+                            borderRadius: "50%",
+                            "&:hover": {
+                              backgroundColor: "#FAECC6",
+                            },
+                          }}
+                          // onClick={() => handleAnswerUp(item._id)}
+                          onClick={handleSortClick}
+                        />
+
+                        <Typography
+                          sx={{
+                            fontSize: "20px",
+                            fontWeight: "bold",
+                            py: 1,
                           }}
                         >
-                          <Button sx={{ color: "red", textTransform: "none" }}>
-                            <ClearIcon sx={{ fontSize: "20px" }} /> Wrong
-                          </Button>
-                          <Button
-                            sx={{ color: "green", textTransform: "none" }}
-                            onClick={() => correctAnswer(item?.QuestionAuthor)}
-                          >
-                            <CheckIcon sx={{ fontSize: "20px" }} /> Correct
-                          </Button>
-                        </Box>
-                      )}
-                    </Box>
-                    {/* --------------------- Commit add ----------------- */}
+                          3
+                        </Typography>
+                        <ArrowDropDownIcon
+                          sx={{
+                            border: "1px solid #BABFC4",
+                            cursor: "pointer",
+                            fontSize: "36px",
+                            p: 0.1,
+                            mb: 2,
+                            borderRadius: "50%",
+                            "&:hover": {
+                              backgroundColor: "#FAECC6",
+                            },
+                          }}
+                          onClick={handleSortClick}
+                        />
+                        {item?.verifiedAnswers === true && (
+                          <CheckIcon
+                            sx={{
+                              fontSize: "40px",
+                              color: "#18864b",
+                              mt: 1,
+                              fontWeight: 400,
+                            }}
+                          />
+                        )}
+                      </Box>
 
-                    <Box
-                      sx={{
-                        display: "flex",
-                      }}
-                    >
                       <Box
                         sx={{
                           width: "100%",
+                          // border: "1px solid red",
                         }}
                       >
-                        <Button
-                          onClick={(e) => addCommentHandler(item?._id)}
+                        <Box
                           sx={{
-                            textTransform: "none",
+                            display: "flex",
+                            // justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          Comments
-                        </Button>
+                          <Typography sx={{ fontWeight: 500 }}>
+                            Answer {i + 1}
+                          </Typography>
 
-                        {/* /////////////////////////////////////////////////////////////////  */}
-
-                        {showCommentField && activePost === item._id && (
+                          <div
+                            style={{ padding: "5px " }}
+                            dangerouslySetInnerHTML={{ __html: item?.text }}
+                          />
+                        </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
+                        >
                           <Box
                             sx={{
                               display: "flex",
-                              gap: 3,
-                              px: 2,
+                              // justifyContent: "center",
+                              alignItems: "center",
+                              gap: 2,
                             }}
                           >
-                            <InputBase
-                              placeholder={`What on your Mind, `}
-                              // value={text}
-                              // onChange={(e) => setTextValue(e.target.value)}
-                              value={comment}
-                              onChange={handleCommentChange}
-                              sx={{
-                                background: theme.palette.background.grayBg,
-                                px: 5,
-                                borderRadius: "20px",
-                                width: "100%",
-                                py: 0.7,
-                              }}
+                            <Avatar
+                              src={`http://localhost:8000/${item?.user?.avatar}`}
+                              alt="img"
                             />
-                            <Button
-                              variant="contained"
-                              onClick={(e) => handleAddComment(item)}
-                              // onClick={() => handleAddComment(i)}
+                            <Typography fontWeight={700} color={"#0A95FF"}>
+                              {item?.user?.firstName} {item?.user?.lastName}
+                            </Typography>
+                          </Box>
 
+                          {/* {authUser?.user?._id && item?.user?._id && ( */}
+
+                          {authUser?.user?._id === item?.QuestionAuthor && (
+                            <Box
                               sx={{
-                                px: 2,
+                                display: "flex",
+                                alignItems: "center",
                               }}
                             >
-                              Comment
-                            </Button>
-                          </Box>
-                        )}
-                        {/* <Typography variant="h5" gutterBottom>
-                        Comments
-                      </Typography> */}
-                        {/* {console.log("item-------", item)} */}
-                        {userComment?.map((ite, i) => (
+                              {item?.verifiedAnswers === false && (
+                                <div>
+                                  <Button
+                                    sx={{ color: "red", textTransform: "none" }}
+                                  >
+                                    <ClearIcon sx={{ fontSize: "20px" }} />{" "}
+                                    Wrong
+                                  </Button>
+                                  <Button
+                                    sx={{
+                                      color: "green",
+                                      textTransform: "none",
+                                    }}
+                                    onClick={() =>
+                                      correctAnswer(item?.QuestionAuthor)
+                                    }
+                                  >
+                                    <CheckIcon sx={{ fontSize: "20px" }} />{" "}
+                                    Correct
+                                  </Button>
+                                </div>
+                              )}
+                            </Box>
+                          )}
+                        </Box>
+                        {/* --------------------- Commit add ----------------- */}
+
+                        <Box
+                          sx={{
+                            display: "flex",
+                          }}
+                        >
                           <Box
-                            key={i}
                             sx={{
-                              my: 1,
-                              // backgroundColor: "#F6F6F6",
                               width: "100%",
+                              my: 1,
                             }}
                           >
-                            {item?._id === ite?.answerId && (
+                            <Button
+                              onClick={(e) => addCommentHandler(item?._id)}
+                              sx={{
+                                textTransform: "none",
+                              }}
+                            >
+                              Comments
+                            </Button>
+
+                            {/* /////////////////////////////////////////////////////////////////  */}
+
+                            {showCommentField && activePost === item._id && (
                               <Box
                                 sx={{
                                   display: "flex",
-                                  alignItems: "center",
-                                  width: "100%",
-                                  backgroundColor: "#F6F6F6",
-
-                                  // border: "1px solid red",
+                                  gap: 3,
+                                  px: 2,
                                 }}
                               >
-                                <Box
+                                <InputBase
+                                  placeholder={`What on your Mind, `}
+                                  // value={text}
+                                  // onChange={(e) => setTextValue(e.target.value)}
+                                  value={comment}
+                                  onChange={handleCommentChange}
                                   sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                    minWidth: "14%",
-                                    p: 0.5,
-                                  }}
-                                >
-                                  <Avatar
-                                    src={`http://localhost:8000/${ite?.userId?.avatar}`}
-                                    alt="User Avatar"
-                                  />
-
-                                  <Typography
-                                    sx={{
-                                      width: "100%",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    {ite?.userId?.firstName}{" "}
-                                    {ite?.userId?.lastName}
-                                  </Typography>
-                                </Box>
-
-                                <Typography
-                                  sx={{
+                                    background: theme.palette.background.grayBg,
+                                    px: 5,
+                                    borderRadius: "20px",
                                     width: "100%",
+                                    py: 0.7,
+                                  }}
+                                />
+                                <Button
+                                  variant="contained"
+                                  onClick={(e) => handleAddComment(item)}
+                                  // onClick={() => handleAddComment(i)}
+
+                                  sx={{
+                                    px: 2,
                                   }}
                                 >
-                                  {ite?.text}
-                                </Typography>
+                                  Comment
+                                </Button>
                               </Box>
                             )}
+
+                            {userComment?.map((ite, i) => (
+                              <Box
+                                key={i}
+                                sx={{
+                                  my: 1,
+                                  // backgroundColor: "#F6F6F6",
+                                  width: "100%",
+                                }}
+                              >
+                                {item?._id === ite?.answerId && (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      width: "100%",
+                                      backgroundColor: "#F6F6F6",
+
+                                      // border: "1px solid red",
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 1,
+                                        minWidth: "14%",
+                                        p: 0.5,
+                                      }}
+                                    >
+                                      <Avatar
+                                        src={`http://localhost:8000/${ite?.userId?.avatar}`}
+                                        alt="User Avatar"
+                                      />
+
+                                      <Typography
+                                        sx={{
+                                          width: "100%",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {ite?.userId?.firstName}{" "}
+                                        {ite?.userId?.lastName}
+                                      </Typography>
+                                    </Box>
+
+                                    <Typography
+                                      sx={{
+                                        width: "100%",
+                                      }}
+                                    >
+                                      {ite?.text}
+                                    </Typography>
+                                  </Box>
+                                )}
+                              </Box>
+                            ))}
                           </Box>
-                        ))}
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                </Box>
-              );
-            })}
+                  );
+                })
+            }
           </Box>
         </Box>
 

@@ -229,7 +229,7 @@ export const getAnswerApi = async (qId, setLoading, dispatch) => {
     const response = await axios.post(`http://localhost:8000/get-answer`, data);
     // console.log("🚀 ~ file: api >>>>>>>>", response?.data);
     await dispatch(getAnswers(response?.data.data));
-    makeToast("Answers retrieved successfully", "success");
+    // makeToast("Answers retrieved successfully", "success");
     return response;
   } catch (error) {
     console.error("Error:", error);
@@ -277,7 +277,7 @@ export const getComments = async (setLoading, dispatch) => {
     // console.log("🚀 Get Comment Api", response?.data);
 
     await dispatch(allComments(response?.data.data));
-    makeToast("Get Comment successfully", "success");
+    // makeToast("Get Comment successfully", "success");
     return response;
   } catch (error) {
     console.error("Error:", error);
@@ -288,7 +288,7 @@ export const getComments = async (setLoading, dispatch) => {
   }
 };
 
-export const verifyAnswer = async (id, setLoading) => {
+export const verifyAnswer = async (data, setLoading) => {
   try {
     setLoading(true);
     const token = localStorage.getItem("token");
@@ -297,10 +297,9 @@ export const verifyAnswer = async (id, setLoading) => {
         Authorization: `Bearer ${token}`,
       },
     };
-
     const response = await axios.post(
       `http://localhost:8000/verify-ans`,
-      id,
+      data,
       config
     );
     makeToast(" Verify  successfully", "success");
