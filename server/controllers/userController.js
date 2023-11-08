@@ -381,30 +381,34 @@ export const updateUserName = async (req, res) => {
 // ___________________________Update Profile________________________
 export const updateProfile = async (req, res) => {
   try {
-    console.log("req.body", req.body);
-
+    // const { firstName, lastName } = req.body;
+    console.log("🚀 updateProfile ~ req.body:", req.body);
     const userId = req.user.id;
-
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log("req.file", req.file);
+    // console.log("req.file", req.file);
     // console.log("req.file.path", req.file.path);
     if (!req.file) {
       return res.status(400).json({ message: "Please upload your image" });
     }
 
+    user.firstName = firstName;
+    user.lastName = lastName;
     user.avatar = req.file.path;
 
     // Save the updated user to the database
     await user.save();
 
-    res
-      .status(200)
-      .json({ message: "Profile updated successfully", avatar: user?.avatar });
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user,
+    });
   } catch (error) {
     console.error("Error in updateProfile:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -421,5 +425,39 @@ export const logoutUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+//-----------------Get All User ------------------------
+
+export const getAllUser = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    await User.populate(users, {
+      path: "following",
+      select: "firstName lastName avatar id",
+    });
+
+    await User.populate(users, {
+      path: "followers",
+      select: "firstName lastName avatar id",
+    });
+
+    // await User.populate(users, {
+    //   path: "User",
+    //   select: "firstName lastName avatar id",
+    // });
+
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };

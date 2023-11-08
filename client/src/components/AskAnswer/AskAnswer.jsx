@@ -240,9 +240,9 @@ const AskAnswer = () => {
   //------------Corrrect answer --------------------
 
   const correctAnswer = async (id) => {
-    // alert(id);
+    alert(id);
     const data = {
-      _id: id,
+      answerId: id,
     };
     const response = await verifyAnswer(data, setLoading);
     console.log("🚀 ~  correctAnswer ~ response:", response);
@@ -574,9 +574,7 @@ const AskAnswer = () => {
                                       color: "green",
                                       textTransform: "none",
                                     }}
-                                    onClick={() =>
-                                      correctAnswer(item?.QuestionAuthor)
-                                    }
+                                    onClick={() => correctAnswer(item?._id)}
                                   >
                                     <CheckIcon sx={{ fontSize: "20px" }} />{" "}
                                     Correct

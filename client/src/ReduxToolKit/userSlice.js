@@ -9,6 +9,9 @@ const initialState = {
   askAns: {},
   getAns: [],
   userComment: [],
+  singUserAns: [],
+  singUserQues: [],
+  allUser: [],
 };
 
 export const userSlice = createSlice({
@@ -18,12 +21,30 @@ export const userSlice = createSlice({
     signUp: (state, action) => {
       state.userRegister = action.payload;
     },
+    // signIn: (state, action) => {
+    //   state.user = action.payload;
+    // },
     signIn: (state, action) => {
-      state.user = action.payload;
+      state.user = { ...state.user, ...action.payload };
     },
+
+    getSingleUserAnswers: (state, action) => {
+      state.singUserAns = action.payload;
+      // state.singUserAns = [...state.singUserAns, ...action.payload];
+    },
+
+    getSingleUserQe: (state, action) => {
+      state.singUserQues = action.payload;
+      // state.singUserAns = [...state.singUserAns, ...action.payload];
+    },
+    getAllUsers: (state, action) => {
+      state.allUser = action.payload;
+    },
+
     auth: (state, action) => {
       state.authUser = action.payload;
     },
+
     AskQuestions: (state, action) => {
       state.askQuestion = action.payload;
     },
@@ -65,6 +86,9 @@ export const {
   AskAnswers,
   getAnswers,
   allComments,
+  getSingleUserAnswers,
+  getSingleUserQe,
+  getAllUsers,
 } = userSlice.actions;
 
 export default userSlice.reducer;

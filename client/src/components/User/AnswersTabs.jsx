@@ -1,8 +1,17 @@
-import { Box, Link, Typography } from "@mui/material";
-import React from "react";
+import { Avatar, Box, Button, Link, Typography } from "@mui/material";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import Loading from "../Loader/Loading";
+import { getSingleUserAns } from "../../api/api";
+import { useNavigate } from "react-router-dom";
+import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import CheckIcon from "@mui/icons-material/Check";
+import ClearIcon from "@mui/icons-material/Clear";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -78,122 +87,302 @@ const tabsLineNone = {
 };
 
 const AnswersTabs = () => {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const [loading, setLoading] = useState(false);
+  const [userId, setUserId] = useState();
+  // console.log("🚀 ~ file: AnswersTabs.jsx:90 ~ AnswersTabs ~ userId:", userId);
+
+  const { user } = useSelector((state) => state?.user?.user);
+
+  const myData = useSelector((state) => state?.user?.singUserAns);
+  // console.log("🚀 ~ file:  userAns:", singUserAns);
+  console.log("🚀  AnswersTabs ~ user:", myData);
+
+  const getUserAns = async () => {
+    if (user?._id !== undefined) {
+      const data = {
+        userId: user?._id,
+      };
+      const res = await getSingleUserAns(data, setLoading, dispatch);
+      console.log("🚀 ~ file res----------:", res);
+    } else {
+      navigate("/sign-in");
+    }
+  };
+
+  useEffect(() => {
+    setUserId(user?._id);
+    getUserAns();
+  }, []);
+
   return (
-    <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          flexWrap: { md: "nowrap", sm: "wrap", sx: "wrap" },
-          width: "100%",
-          // border: "1px solid red",
-        }}
-      >
+    <>
+      <Loading isLoading={loading} />
+      <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            flexWrap: { md: "nowrap", sm: "wrap", sx: "wrap" },
+            width: "100%",
+            // border: "1px solid red",
+          }}
+        >
+          <Box
+            sx={{
+              width: "100%",
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: { md: "21px", sm: "18px", xs: "16px" },
+                color: "#232629",
+                fontWeight: 400,
+              }}
+            >
+              Answers
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              // border: "1px solid red",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              aria-label="basic tabs example"
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ ...tabsLineNone }}
+            >
+              <Tab
+                label="Score"
+                sx={{
+                  ...tabStyles,
+                  borderRadius: "10px 0 0 10px",
+                }}
+                {...a11yProps(0)}
+              />
+              <Tab label="Activity" sx={{ ...tabStyles }} {...a11yProps(1)} />
+              <Tab
+                label="Newest"
+                sx={{ ...tabStyles, borderRadius: "0 10px 10px 0" }}
+                {...a11yProps(2)}
+              />
+            </Tabs>
+          </Box>
+        </Box>
+
         <Box
           sx={{
             width: "100%",
           }}
         >
-          <Typography
-            sx={{
-              fontSize: { md: "21px", sm: "18px", xs: "16px" },
-              color: "#232629",
-              fontWeight: 400,
-            }}
-          >
-            Answers
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            // border: "1px solid red",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-            variant="scrollable"
-            scrollButtons="auto"
-            sx={{ ...tabsLineNone }}
-          >
-            <Tab
-              label="Score"
+          <CustomTabPanel value={value} index={0} sx={{ p: 1 }}>
+            <Box
               sx={{
-                ...tabStyles,
-                borderRadius: "10px 0 0 10px",
+                width: "100%",
+                pl: 1,
+                py: 3,
+                boxShadow:
+                  " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
               }}
-              {...a11yProps(0)}
-            />
-            <Tab label="Activity" sx={{ ...tabStyles }} {...a11yProps(1)} />
-            <Tab
-              label="Newest"
-              sx={{ ...tabStyles, borderRadius: "0 10px 10px 0" }}
-              {...a11yProps(2)}
-            />
-          </Tabs>
+            >
+              <Typography sx={{ textAlign: "center" }}>
+                You have not <Link to="">answered</Link> any questions....
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  m: 1,
+                  width: "100%",
+                }}
+              >
+                <Box sx={{ width: "100%" }}>
+                  {myData?.map((item, i) => {
+                    // console.log("🚀  ~ item:", item);
+                    return (
+                      <Box
+                        key={i}
+                        sx={{
+                          width: "97%",
+                          // border: "1px solid red",
+                          display: "flex",
+                          borderBottom: "2px solid #BABFC4",
+                          // flexDirection: "column",
+                          mb: 2,
+                        }}
+                      >
+                        {/* <Box
+                          sx={{
+                            display: "flex",
+                            // justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
+                            pr: 2,
+                            // border: "1px solid black ",
+                          }}
+                        >
+                          {item?.viewCountAnswer}
+
+                          <ArrowDropUpIcon
+                            sx={{
+                              border: "1px solid #BABFC4",
+                              cursor: "pointer",
+                              fontSize: "36px",
+                              p: 0.1,
+                              borderRadius: "50%",
+                              "&:hover": {
+                                backgroundColor: "#FAECC6",
+                              },
+                            }}
+                            // onClick={() => handleAnswerUp(item._id)}
+                            // onClick={handleSortClick}
+                          />
+
+                          <Typography
+                            sx={{
+                              fontSize: "20px",
+                              fontWeight: "bold",
+                              py: 1,
+                            }}
+                          >
+                            1
+                          </Typography>
+                          <ArrowDropDownIcon
+                            sx={{
+                              border: "1px solid #BABFC4",
+                              cursor: "pointer",
+                              fontSize: "36px",
+                              p: 0.1,
+                              mb: 2,
+                              borderRadius: "50%",
+                              "&:hover": {
+                                backgroundColor: "#FAECC6",
+                              },
+                            }}
+                            // onClick={handleSortClick}
+                          />
+                          {item?.verifiedAnswers === true && (
+                            <CheckIcon
+                              sx={{
+                                fontSize: "40px",
+                                color: "#18864b",
+                                mt: 1,
+                                fontWeight: 400,
+                              }}
+                            />
+                          )}
+                        </Box> */}
+
+                        <Box
+                          sx={{
+                            width: "100%",
+                            // border: "1px solid red",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                // justifyContent: "center",
+                                alignItems: "center",
+                                gap: 2,
+                              }}
+                            >
+                              <Avatar
+                                src={`http://localhost:8000/${item?.user?.avatar}`}
+                                alt="img"
+                              />
+                              <Typography fontWeight={700} color={"#0A95FF"}>
+                                {item?.user?.firstName} {item?.user?.lastName}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              // justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography sx={{ fontWeight: 500 }}>
+                              Answer {i + 1}
+                            </Typography>
+
+                            <div
+                              style={{ padding: "5px " }}
+                              dangerouslySetInnerHTML={{ __html: item?.text }}
+                            />
+                          </Box>
+
+                          <Box>
+                            <Typography
+                              sx={{
+                                fontWeight: 700,
+                              }}
+                            >
+                              view {item?.viewCountAnswer}
+                            </Typography>
+                          </Box>
+                          {/* --------------------- Commit add ----------------- */}
+                        </Box>
+                      </Box>
+                    );
+                  })}
+                </Box>
+              </Box>
+            </Box>
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            <Box
+              sx={{
+                width: "100%",
+                pl: 1,
+                py: 3,
+                boxShadow:
+                  " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
+              }}
+            >
+              <Typography sx={{ textAlign: "center" }}>
+                You have not <Link to="">answered </Link>
+              </Typography>
+            </Box>
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>
+            <Box
+              sx={{
+                width: "100%",
+                pl: 1,
+                py: 3,
+                boxShadow:
+                  " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
+              }}
+            >
+              <Typography sx={{ textAlign: "center" }}>You have not</Typography>
+            </Box>
+          </CustomTabPanel>
         </Box>
       </Box>
-
-      <Box
-        sx={{
-          width: "100%",
-        }}
-      >
-        <CustomTabPanel value={value} index={0} sx={{ p: 1 }}>
-          <Box
-            sx={{
-              width: "100%",
-              pl: 1,
-              py: 3,
-              boxShadow:
-                " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
-            }}
-          >
-            <Typography sx={{ textAlign: "center" }}>
-              You have not <Link to="">answered</Link> any questions
-            </Typography>
-          </Box>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-          <Box
-            sx={{
-              width: "100%",
-              pl: 1,
-              py: 3,
-              boxShadow:
-                " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
-            }}
-          >
-            <Typography sx={{ textAlign: "center" }}>
-              You have not <Link to="">answered</Link>
-            </Typography>
-          </Box>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          <Box
-            sx={{
-              width: "100%",
-              pl: 1,
-              py: 3,
-              boxShadow:
-                " rgba(9, 30, 66, 0.25) 0px 1px 1px, rgba(9, 30, 66, 0.13) 0px 0px 1px 1px",
-            }}
-          >
-            <Typography sx={{ textAlign: "center" }}>You have not</Typography>
-          </Box>
-        </CustomTabPanel>
-      </Box>
-    </Box>
+    </>
   );
 };
 

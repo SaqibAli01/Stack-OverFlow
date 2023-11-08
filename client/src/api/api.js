@@ -9,6 +9,8 @@ import {
   auth,
   getAnswers,
   getQuestions,
+  getSingleUserAnswers,
+  getSingleUserQe,
   signIn,
   signUp,
 } from "../ReduxToolKit/userSlice";
@@ -303,6 +305,92 @@ export const verifyAnswer = async (data, setLoading) => {
       config
     );
     makeToast(" Verify  successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+//update profile
+
+export const updateProfile = async (data, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    const response = await axios.post(
+      `http://localhost:8000/updateProfile`,
+      data,
+      config
+    );
+    await dispatch(signIn(response?.data));
+    console.log("🚀 ~ file: api.js:332 ~ updateProfile ~ response:", response);
+
+    makeToast(
+      response?.data?.message
+        ? response?.data?.message
+        : " Update Profile successfully",
+      "success"
+    );
+
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+
+    // You should define the makeToast function
+    makeToast(error?.response?.data || "An error occurred", "error");
+
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+//get Answer single user profile
+export const getSingleUserAns = async (data, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    console.log("Get All Answers Id -----", data);
+    const response = await axios.post(
+      `http://localhost:8000/get-single-user-ans`,
+      data
+    );
+    console.log("🚀 Get All Ans Api", response?.data);
+
+    await dispatch(getSingleUserAnswers(response?.data.data));
+    makeToast("Get Comment successfully", "success");
+    return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+//get Answer single user profile
+export const getSingleUserQues = async (data, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    console.log("Get All Answers Id -----", data);
+    const response = await axios.post(
+      `http://localhost:8000/get-single-user-que`,
+      data
+    );
+    console.log("🚀 Get All Que  Api", response?.data);
+
+    await dispatch(getSingleUserQe(response?.data.data));
+    makeToast("Get Question  successfully", "success");
     return response;
   } catch (error) {
     console.error("Error:", error);

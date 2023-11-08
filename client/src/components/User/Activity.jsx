@@ -44,11 +44,12 @@ const Activity = () => {
                 gap: 1,
                 margin: "5px 1px",
                 borderRadius: "25px",
-                color: "#232629",
+                // color: "#232629",
+                color: index === activeComponent ? "#F1F2F3" : "#232629",
                 backgroundColor:
                   index === activeComponent ? "#6a737c" : "#F1F2F3",
                 justifyContent: "center",
-                height: "18px",
+                height: "30px",
                 fontWeight: 400,
               };
 
@@ -65,6 +66,7 @@ const Activity = () => {
                       alignItems: "center",
                       width: "70%",
                       my: 1,
+                      // border: "1px solid red",
                     }}
                   >
                     <Typography

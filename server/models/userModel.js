@@ -50,6 +50,33 @@ const userSchema = new Schema({
     default: null,
   },
 
+  // followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  // following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  followers: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      firstName: String,
+      lastName: String,
+      avatar: String,
+      id: String,
+    },
+  ],
+  following: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      firstName: String,
+      lastName: String,
+      avatar: String,
+      id: String,
+    },
+  ],
+
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

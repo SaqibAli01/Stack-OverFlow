@@ -6,6 +6,8 @@ import {
   correctAnswer,
   getAnswer,
   getQuestions,
+  getSingleUserAnswer,
+  getSingleUserQuestion,
 } from "../controllers/QuestionController.js";
 
 const router = express.Router();
@@ -31,4 +33,6 @@ router.post(
   correctAnswer
 );
 
+router.post("/get-single-user-ans", getSingleUserAnswer);
+router.post("/get-single-user-que", getSingleUserQuestion);
 export default router;

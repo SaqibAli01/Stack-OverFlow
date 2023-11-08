@@ -87,8 +87,8 @@ const NavWeb = () => {
   }, []);
 
   const array = [
-    { name: "About", link: "/" },
-    { name: "Product", link: "/accounts" },
+    { name: "Product", link: "/" },
+    { name: "About", link: "/accounts" },
     { name: "Teams", link: "/invest" },
   ];
 

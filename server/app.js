@@ -7,6 +7,8 @@ import { isAuthenticatedUser } from "./middleware/auth.js";
 import User from "./models/userModel.js";
 import Question from "./routes/questionRoutes.js";
 import Comment from "./routes/commentRoutes.js";
+import follows from "./routes/followersRoutes.js";
+// import follow from "./routes/followRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -16,6 +18,7 @@ app.use(express.json());
 app.use(user);
 app.use(Question);
 app.use(Comment);
+app.use(follows);
 
 // Initialize Passport
 app.use(passport.initialize());

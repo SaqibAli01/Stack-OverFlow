@@ -3,6 +3,7 @@ import passport from "passport";
 import { upload } from "../middleware/multer.js"; // upload img
 import {
   forgotPassword,
+  getAllUser,
   getUser,
   logoutUser,
   registerUser,
@@ -42,7 +43,7 @@ router.put(
   updateUserName
 );
 
-router.put(
+router.post(
   "/updateProfile",
   upload.single("avatar"),
   passport.authenticate("jwt", { session: false }),
@@ -55,4 +56,5 @@ router.get(
   logoutUser
 );
 
+router.get("/get-all-user", getAllUser);
 export default router;

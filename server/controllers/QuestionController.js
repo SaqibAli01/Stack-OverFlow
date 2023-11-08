@@ -170,13 +170,46 @@ const askAnswer = async (req, res) => {
   }
 };
 
+// const correctAnswer = async (req, res) => {
+//   try {
+//     const answerId = req.body;
+//     console.log("🚀 req.body:", req.body);
+
+//     const findAuth = await Answers.findOne(answerId);
+//     console.log(" ~ findAuth:", findAuth);
+
+//     if (!findAuth) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Answer Not found ......... " });
+//     }
+
+//     // await Answers.findByIdAndUpdate(findAuth._id, {
+//     //   verifiedAnswers: true,
+//     // });
+//     // console.log("first--");
+//     findAuth.verifiedAnswers = true;
+
+//     await findAuth.save();
+
+//     res.status(200).json({
+//       success: true,
+//       message: "Answers Verify successfully",
+//       data: findAuth,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ success: false, error: error.message });
+//   }
+// };
+
 const correctAnswer = async (req, res) => {
   try {
-    const _id = req.body;
-    console.log("🚀 ~ correctAnswer ~ id:", _id);
+    const { answerId } = req.body;
+    console.log("🚀 req.body:", req.body);
 
-    const findAuth = await Answers.findOne({ QuestionAuthor: _id });
-    console.log(" ~ findAuth:", findAuth);
+    const findAuth = await Answers.findOne({ _id: answerId });
+    // console.log(" ~ findAuth:", findAuth);
 
     if (!findAuth) {
       return res
@@ -184,8 +217,9 @@ const correctAnswer = async (req, res) => {
         .json({ success: false, message: "Answer Not found ......... " });
     }
 
-    await Answers.findByIdAndUpdate(findAuth._id, { verifiedAnswers: true });
-    // await Answers.findByIdAndUpdate({ verified: true });
+    await Answers.findByIdAndUpdate(answerId, {
+      verifiedAnswers: true,
+    });
 
     res.status(200).json({
       success: true,
@@ -223,4 +257,62 @@ const getAnswer = async (req, res, next) => {
   }
 };
 
-export { askQuestion, getQuestions, askAnswer, getAnswer, correctAnswer };
+const getSingleUserAnswer = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    console.log("userId", userId);
+    // const findAnswer = await Answers.findOne({ _id: userId });
+
+    const AllAnswer = await Answers.find({ user: userId }).populate({
+      path: "user",
+      select: "_id firstName lastName avatar",
+      options: { strictPopulate: false },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: AllAnswer,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+const getSingleUserQuestion = async (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    console.log("userId", userId);
+    // const findAnswer = await Answers.findOne({ _id: userId });
+
+    const AllQuestion = await Question.find({ user: userId }).populate({
+      path: "user",
+      select: "_id firstName lastName avatar",
+      options: { strictPopulate: false },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: AllQuestion,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+export {
+  askQuestion,
+  getQuestions,
+  askAnswer,
+  getAnswer,
+  correctAnswer,
+  getSingleUserAnswer,
+  getSingleUserQuestion,
+};
