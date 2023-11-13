@@ -2,6 +2,7 @@ import express from "express";
 import passport from "passport";
 import {
   createComment,
+  deleteComment,
   getAllComments,
 } from "../controllers/commentController.js";
 
@@ -14,6 +15,13 @@ router.post(
 );
 
 router.get("/get-comment", getAllComments);
+
+router.delete(
+  "/delete-comment/:commentId",
+  passport.authenticate("jwt", { session: false }),
+  deleteComment
+);
+
 // router.post(
 //   "/ask-answer",
 //   passport.authenticate("jwt", { session: false }),

@@ -60,12 +60,31 @@ export const userSlice = createSlice({
     getAnswers: (state, action) => {
       state.getAns = action.payload;
     },
+
+    deleteAnswerRedux: (state, action) => {
+      const answerIdToDelete = action.payload;
+      console.log("🚀 ~ Redux answerIdToDelete:", answerIdToDelete);
+
+      const updatedAnswer = state.getAns.filter((comment) => {
+        return comment._id !== answerIdToDelete;
+      });
+
+      return { ...state, getAns: updatedAnswer };
+    },
+
     // getQuestions: (state, action) => {
     //   state.getQuestion = [...state.getQuestion, ...action.payload];
     // },
 
     allComments: (state, action) => {
       return { ...state, userComment: action.payload };
+    },
+    deleteCommentRedux: (state, action) => {
+      const commentIdToDelete = action.payload;
+      const updatedComments = state.userComment.filter((comment) => {
+        return comment._id !== commentIdToDelete;
+      });
+      return { ...state, userComment: updatedComments };
     },
 
     logout: (state) => {
@@ -89,6 +108,8 @@ export const {
   getSingleUserAnswers,
   getSingleUserQe,
   getAllUsers,
+  deleteCommentRedux,
+  deleteAnswerRedux,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -7,6 +7,8 @@ import {
   AskQuestions,
   allComments,
   auth,
+  deleteAnswerRedux,
+  deleteCommentRedux,
   getAnswers,
   getQuestions,
   getSingleUserAnswers,
@@ -392,6 +394,105 @@ export const getSingleUserQues = async (data, setLoading, dispatch) => {
     await dispatch(getSingleUserQe(response?.data.data));
     makeToast("Get Question  successfully", "success");
     return response;
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+// delete comments handler
+
+export const deleteComment = async (commentId, dispatch, setLoading) => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.delete(
+      `http://localhost:8000/delete-comment/${commentId}`,
+      config
+    );
+
+    // console.log("🚀 ~delete comment >>>>>>>>", response?.data?.data);
+    if (response?.data?.success === true) {
+      // await deleteComment(commentId);
+      dispatch(deleteCommentRedux(commentId));
+      // getComments();
+      makeToast("Comment deleted successfully", "success");
+      return response;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+// delete Answer
+
+export const deleteAnswer = async (answerId, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.delete(
+      `http://localhost:8000/delete-answer/${answerId}`,
+      config
+    );
+    console.log("🚀 ~deleteAnswer ~ response:", response);
+
+    if (response?.data?.success === true) {
+      dispatch(deleteAnswerRedux(answerId));
+      makeToast("Answer deleted successfully", "success");
+      return response;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    makeToast(error?.response?.data || "An error occurred", "error");
+    return error.response;
+  } finally {
+    setLoading(false);
+  }
+};
+
+//delete questions
+
+export const deleteQuestions = async (QuestionId, setLoading, dispatch) => {
+  try {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.delete(
+      `http://localhost:8000/delete-question/${QuestionId}`,
+      config
+    );
+
+    console.log("🚀 ~deleteAnswer ~ response:", response);
+
+    if (response?.data?.success === true) {
+      dispatch(deleteAnswerRedux(QuestionId));
+      makeToast("Question Deleted Successfully", "success");
+      return response;
+    }
   } catch (error) {
     console.error("Error:", error);
     makeToast(error?.response?.data || "An error occurred", "error");

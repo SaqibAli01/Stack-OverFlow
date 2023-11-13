@@ -1,4 +1,5 @@
 import Answers from "../models/AnsModel.js";
+import Comment from "../models/commentModel.js";
 import Question from "../models/questionModel.js";
 import User from "../models/userModel.js";
 
@@ -58,49 +59,43 @@ const getQuestions = async (req, res) => {
   }
 };
 
-// const askAnswer = async (req, res) => {
-//   try {
-//     const { text, userId, questionId, QuestionAuthor } = req.body;
+const deleteQuestion = async (req, res) => {
+  try {
+    const { QuestionId } = req.params;
 
-//     const findUser = await User.findOne({ _id: userId });
-//     const findQuestion = await Question.findOne({ _id: questionId });
+    const findQuestion = await Answers.findById(QuestionId);
 
-//     // console.log("-- questionId --:", findQuestion);
+    if (!findQuestion) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Question not found" });
+    }
 
-//     if (!findUser) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not Login " });
-//     }
+    // const findAnswer = await Answers.findById(answerId);
 
-//     if (!findQuestion) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Question Not find " });
-//     }
+    // if (!findAnswer) {
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Answer not found" });
+    // }
+    await Answers.deleteMany({ questionId: findQuestion?._id });
+    await Comment.deleteMany({ questionId: findQuestion?._id });
 
-//     const answer = new Answers({
-//       text,
-//       user: findUser?._id,
-//       questionId: findQuestion?._id,
-//       QuestionAuthor: findQuestion?.user?._id,
-//     });
-//     // console.log("answer", answer);
-//     await answer.save();
+    // await Answers.findByIdAndDelete(answerId);
 
-//     res.status(201).json({
-//       success: true,
-//       message: "Answer asked successfully!",
-//       answer,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({
-//       success: false,
-//       error: error.message,
-//     });
-//   }
-// };
+    await Question.findByIdAndUpdate(findQuestion._id, {
+      $inc: { answerCount: -1 },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Question  deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 const askAnswer = async (req, res) => {
   try {
@@ -170,36 +165,59 @@ const askAnswer = async (req, res) => {
   }
 };
 
-// const correctAnswer = async (req, res) => {
+const deleteAnswer = async (req, res) => {
+  try {
+    const { answerId } = req.params;
+
+    const findAnswer = await Answers.findById(answerId);
+
+    if (!findAnswer) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Answer not found" });
+    }
+
+    await Comment.deleteMany({ answerId: answerId });
+
+    await Answers.findByIdAndDelete(answerId);
+
+    await Question.findByIdAndUpdate(findAnswer.questionId, {
+      $inc: { answerCount: -1 },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Answer and associated comments deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// const deleteAnswer = async (req, res) => {
 //   try {
-//     const answerId = req.body;
-//     console.log("🚀 req.body:", req.body);
+//     const { answerId } = req.params;
 
-//     const findAuth = await Answers.findOne(answerId);
-//     console.log(" ~ findAuth:", findAuth);
+//     const findAnswer = await Answers.findById(answerId);
 
-//     if (!findAuth) {
+//     if (!findAnswer) {
 //       return res
 //         .status(404)
-//         .json({ success: false, message: "Answer Not found ......... " });
+//         .json({ success: false, message: "Answer not found" });
 //     }
 
-//     // await Answers.findByIdAndUpdate(findAuth._id, {
-//     //   verifiedAnswers: true,
-//     // });
-//     // console.log("first--");
-//     findAuth.verifiedAnswers = true;
-
-//     await findAuth.save();
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Answers Verify successfully",
-//       data: findAuth,
+//     await Answers.findByIdAndDelete(answerId);
+//     await Question.findByIdAndUpdate(findAnswer.questionId, {
+//       $inc: { answerCount: -1 },
 //     });
+
+//     return res
+//       .status(200)
+//       .json({ success: true, message: "Answer deleted successfully" });
 //   } catch (error) {
 //     console.error(error);
-//     res.status(500).json({ success: false, error: error.message });
+//     return res.status(500).json({ success: false, error: error.message });
 //   }
 // };
 
@@ -315,4 +333,6 @@ export {
   correctAnswer,
   getSingleUserAnswer,
   getSingleUserQuestion,
+  deleteAnswer,
+  deleteQuestion,
 };

@@ -4,6 +4,8 @@ import {
   askAnswer,
   askQuestion,
   correctAnswer,
+  deleteAnswer,
+  deleteQuestion,
   getAnswer,
   getQuestions,
   getSingleUserAnswer,
@@ -35,4 +37,17 @@ router.post(
 
 router.post("/get-single-user-ans", getSingleUserAnswer);
 router.post("/get-single-user-que", getSingleUserQuestion);
+
+router.delete(
+  "/delete-answer/:answerId",
+  passport.authenticate("jwt", { session: false }),
+  deleteAnswer
+);
+
+router.delete(
+  "/delete-question/:questionId",
+  passport.authenticate("jwt", { session: false }),
+  deleteQuestion
+);
+
 export default router;

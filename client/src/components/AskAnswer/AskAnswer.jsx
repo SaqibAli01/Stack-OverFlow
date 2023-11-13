@@ -23,10 +23,13 @@ import "react-quill/dist/quill.snow.css";
 import useMakeToast from "../../hooks/makeToast";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   AskAnswerApi,
   AsksQue,
   commentsAdd,
+  deleteAnswer,
+  deleteComment,
   getAnswerApi,
   getComments,
   getQuestion,
@@ -38,7 +41,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { allComments } from "../../ReduxToolKit/userSlice";
+import { allComments, deleteCommentRedux } from "../../ReduxToolKit/userSlice";
 
 var quill;
 const modules = {
@@ -131,7 +134,6 @@ const AskAnswer = () => {
       setAllData(response?.data?.data);
     };
     getQ();
-
     getComm();
 
     // setAllData(data);
@@ -192,21 +194,12 @@ const AskAnswer = () => {
 
   const addCommentHandler = (postId) => {
     setActivePost(postId);
-    // alert(postId);
     setShowCommentField(true);
   };
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
   };
-
-  // const handleAddComment = (id) => {
-  //   alert(id);
-  //   if (comment.trim() !== "") {
-  //     setComments([...comments, comment]);
-  //     setComment("");
-  //   }
-  // };
 
   const handleAddComment = async (item) => {
     // alert(JSON.stringify(item));
@@ -263,6 +256,24 @@ const AskAnswer = () => {
   //   setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   // };
 
+  //-----Comment delate handler----------
+  const commentDeleteHandler = async (commentId) => {
+    const res = await deleteComment(commentId, dispatch, setLoading);
+    console.log("🚀  commentDeleteHandler ~ res:", res);
+    if (res?.data?.success === true) {
+      getComm();
+    }
+  };
+
+  //------ Answer Delete Handler handler --------------------------------
+  const answerDeleteHandler = async (answerId) => {
+    const res = await deleteAnswer(answerId, setLoading, dispatch);
+    console.log("🚀 ~ file: res:", res);
+    if (res?.data?.success === true) {
+      getComm();
+    }
+  };
+
   return (
     <>
       <Loading isLoading={loading} />
@@ -288,32 +299,42 @@ const AskAnswer = () => {
                       ) : (
                         <Text>{item?.answerCount + 1} answers</Text>
                       )}
-                      {/* {item?.viewCount === 0 ? (
-                        <Text>{item?.viewCount} views</Text>
-                      ) : (
-                        <Text>{item?.viewCount + 1} views</Text>
-                      )} */}
+
                       <Text>{item?.viewCount} views</Text>
                     </Box>
                   </Grid>
                   <Grid item xs={12} sm={12} md={9.5}>
                     <Box>
-                      {/* <Typography sx={{ color: "#0074CC", fontWeight: 500 }}>
-                        {item?.text}
-                      </Typography> */}
                       <Box
                         sx={{
-                          cursor: "pointer",
-                        }}
-                        onClick={() => {
-                          navigate(`/AskAnswer/${item?._id}`);
+                          display: "flex",
+                          justifyContent: "space-between",
                         }}
                       >
-                        <div
-                          style={{ color: "#0074CC", fontWeight: 500 }}
-                          dangerouslySetInnerHTML={{ __html: item?.text }}
-                        />
+                        <Box
+                          sx={{
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            navigate(`/AskAnswer/${item?._id}`);
+                          }}
+                        >
+                          <div
+                            style={{ color: "#0074CC", fontWeight: 500 }}
+                            dangerouslySetInnerHTML={{ __html: item?.text }}
+                          />
+                        </Box>
+                        <Box>
+                          <Button
+                          // onClick={() =>
+                          //   commentDeleteHandler(ite?._id)
+                          // }
+                          >
+                            <DeleteIcon />
+                          </Button>
+                        </Box>
                       </Box>
+
                       <Box
                         sx={{
                           display: "flex",
@@ -432,7 +453,7 @@ const AskAnswer = () => {
                   }
                 })
                 .map((item, i) => {
-                  console.log("🚀  ~ item:", item);
+                  // console.log("🚀  ~ item:", item);
                   return (
                     <Box
                       key={i}
@@ -516,19 +537,42 @@ const AskAnswer = () => {
                         <Box
                           sx={{
                             display: "flex",
-                            // justifyContent: "center",
-                            alignItems: "center",
+                            justifyContent: "space-between",
                           }}
                         >
-                          <Typography sx={{ fontWeight: 500 }}>
-                            Answer {i + 1}
-                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              // justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography sx={{ fontWeight: 500 }}>
+                              Answer {i + 1}
+                            </Typography>
 
-                          <div
-                            style={{ padding: "5px " }}
-                            dangerouslySetInnerHTML={{ __html: item?.text }}
-                          />
+                            <div
+                              style={{ padding: "5px " }}
+                              dangerouslySetInnerHTML={{ __html: item?.text }}
+                            />
+                          </Box>
+                          <Box>
+                            {/* <Button
+                              onClick={() => answerDeleteHandler(item?._id)}
+                            >
+                              <DeleteIcon />
+                            </Button> */}
+
+                            {uId === item?.user?._id && (
+                              <Button
+                                onClick={() => answerDeleteHandler(item?._id)}
+                              >
+                                <DeleteIcon />
+                              </Button>
+                            )}
+                          </Box>
                         </Box>
+
                         <Box
                           sx={{
                             display: "flex",
@@ -696,6 +740,17 @@ const AskAnswer = () => {
                                     >
                                       {ite?.text}
                                     </Typography>
+
+                                    {(uId === ite?.userId?._id ||
+                                      uId === item?.user?._id) && (
+                                      <Button
+                                        onClick={() =>
+                                          commentDeleteHandler(ite?._id)
+                                        }
+                                      >
+                                        <DeleteIcon />
+                                      </Button>
+                                    )}
                                   </Box>
                                 )}
                               </Box>

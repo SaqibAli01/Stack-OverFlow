@@ -60,7 +60,32 @@ const getAllComments = async (req, res) => {
   }
 };
 
-export { createComment, getAllComments };
+// delete comments
+const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params;
+    // console.log("🚀 ~ deleteComment ~ commentId:", commentId);
+
+    const comment = await Comment.findById(commentId);
+
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Comment not found" });
+    }
+
+    await Comment.findByIdAndDelete(commentId);
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export { createComment, getAllComments, deleteComment };
 
 // Get comments for a specific answer
 // exports.getCommentsForAnswer = async (req, res) => {
